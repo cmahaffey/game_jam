@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-$(document).ready(function() {
-  console.log("All loaded!");
-});
-=======
 var BedJam = BedJam || {};
 
 BedJam.game = new Phaser.Game(500, 500, Phaser.AUTO, '');
@@ -15,4 +10,3 @@ BedJam.game.state.add('Game', BedJam.Game);
 
 // Starts game
 BedJam.game.state.start('Boot');
->>>>>>> raymond
