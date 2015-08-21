@@ -8,6 +8,8 @@ BedJam.Game.prototype = {
   },
 
   update: function() {
-
+    if (this.game.input.activePointer.justPressed()) {
+      this.game.state.start('Battle');
+    }
   }
 };
