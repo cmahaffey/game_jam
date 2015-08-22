@@ -1,6 +1,6 @@
 var BedJam = BedJam || {};
 
-BedJam.game = new Phaser.Game(500, 500, Phaser.AUTO, '');
+BedJam.game = new Phaser.Game(640, 640, Phaser.AUTO, '');
 
 // Adds game states
 BedJam.game.state.add('Boot', BedJam.Boot);

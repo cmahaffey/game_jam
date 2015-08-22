@@ -1,4 +1,92 @@
 body {
   padding: 0;
   margin: 0;
+  overflow: hidden;
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+/* Battle */
+
+.battleText {
+  position: fixed;
+  background-color: white;
+  border: 2px solid gold;
+  bottom: 6vh;
+  left: 10vw;
+  right: 10vw;
+  height: 20vh;
+  text-align: center;
+  padding-top: 30px;
+  font-size: 30px;
+}
+
+.displayBar {
+  position: absolute;
+  left: 85px;
+  width: 150px;
+  height: 12px;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.displayBarText {
+  position: absolute;
+  left: 25px;
+  width: 50px;
+  color: white;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.displayBarFill {
+  position: absolute;
+  left: 87px;
+  height: 12px;
+}
+
+.hpDisplay {
+  top: 30px;
+}
+
+.mpDisplay {
+  top: 50px;
+}
+
+.expDisplay {
+  top: 70px;
+}
+
+.hpFill {
+  top: 32px;
+  background-color: green;
+  width: 150px;
+}
+
+.mpFill {
+  top: 52px;
+  background-color: purple;
+  width: 146px;
+}
+
+.expFill {
+  top: 72px;
+  background-color: gold;
+  width: 50px;
+}
+
+/* Actions */
+
+.actionsMenu {
+  width: 100%;
+  text-align: left;
+  margin-left: 14vw;
+}
+
+.actions {
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.actionsRow {
+  height: 20px;
 }

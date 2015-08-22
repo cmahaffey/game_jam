@@ -9,6 +9,7 @@ BedJam.Boot.prototype = {
 
   create: function() {
     console.log('boot state loaded');
+    $('.overlay').append($('canvas'));
     // sets loading screen background color
 
     // Scaling options
