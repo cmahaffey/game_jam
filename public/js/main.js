@@ -1,3 +1,24 @@
+<<<<<<< HEAD
 $(document).ready(function() {
   console.log("All loaded!");
 });
+=======
+<<<<<<< HEAD
+$(document).ready(function() {
+  console.log("All loaded!");
+});
+=======
+var BedJam = BedJam || {};
+
+BedJam.game = new Phaser.Game(500, 500, Phaser.AUTO, '');
+
+// Adds game states
+BedJam.game.state.add('Boot', BedJam.Boot);
+BedJam.game.state.add('Preload', BedJam.Preload);
+BedJam.game.state.add('MainMenu', BedJam.MainMenu);
+BedJam.game.state.add('Game', BedJam.Game);
+
+// Starts game
+BedJam.game.state.start('Boot');
+>>>>>>> raymond
+>>>>>>> a6dfee29511a7d0036303a6cfe3424d8954bfe98
