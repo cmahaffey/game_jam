@@ -1,5 +1,8 @@
+//requires abilities.js
+//require itemGenerations.js
+
 function Character(options){
-  this.name=(options.name)
+  this.name=(options.name),
   this.lvl=(options.lvl),
   this.maxHp=(5*options.def),
   this.maxMp=(3*options.imn),
@@ -15,7 +18,7 @@ function Character(options){
   this.equipment=options.equipment || null,
   this.player= options.play || false,
   this.exp=0,
-  this.expMax=lvl*10,
+  this.expMax=this.lvl*10,
   this.deBuff=null,
   this.buff=null,
   this.turn=0,
@@ -24,14 +27,18 @@ function Character(options){
 }
 
 Character.prototype.battle=function battle(enemy){
-  this.Turn++;
+  this.turn++;
   if (this.buffTurns>1){
     this.buffTurns--;
+    this.critCheck(enemy);
   }else if (this.buffTurns===1) {
     this.buffTurns--;
     console.log(this.name+" is no longer buffed!")
-    this.def=Math.round(this.def/1.5);
-    this.buff=null;
+    if (buff==='brave'){
+      this.def=Math.round(this.def/1.5);
+      this.buff=null;
+    }
+    this.critCheck(enemy);
   }
   if (this.deBTurns>1){
     this.deBTurns--;
@@ -41,9 +48,8 @@ Character.prototype.battle=function battle(enemy){
     this.deBTurns--;
     console.log(this.name +" woke up!");
     this.deBuff=null;
+    this.critCheck(enemy);
   }
-
-  this.critCheck(enemy);
 }
 Character.prototype.critCheck= function critCheck(enemy){
   console.log(this.name+' attacked '+enemy.name);
@@ -146,7 +152,7 @@ Character.prototype.win= function win(enemy){
     var gain=Math.floor((enemy.lvl*5)/2)
     console.log(this.name+" gained "+gain+" experience points")
     this.exp+=gain;
-    if (this.exp===this.expMax){
+    if (this.exp>=this.expMax){
       this.lvlUp();
     }else{
       //return to game screen
@@ -162,16 +168,109 @@ Character.prototype.lvlUp=function lvlUp(){
     this.lvl+=1;
   }
   this.exp=0;
-  this.expMax=lvl*10;
+  this.expMax=this.lvl*10;
   if (this.lvl===2){this.abilities.push({name: 'hurt', spell:hurt})}
   if (this.lvl===4){this.abilities.push({name: 'heal', spell:heal})}
   if (this.lvl===6){this.abilities.push({name: 'fortyWinks', spell:fortyWinks})}
   if (this.lvl===8){this.abilities.push({name: 'beBrave', spell:beBrave})}
   if (this.lvl===10){this.abilities.push({name: 'tantrum', spell:tantrum})}
-  //this.ptSelect();
+  //this.ptSelect(); menu for lvl up
+};
+Character.prototype.getItem = function getItem(item){
+  this.inventory.push(item);
 };
 
-var player={name:'sophia',lvl:1,att:2,def:50,imn:2,spd:4,play: true};
-var enemy={name:'fear',lvl:2,att:2,def:2,imn:2,spd:2};
-var girl = new Character(player);
-var fear = new Character(enemy);
+Character.prototype.checkIfInInventory = function checkIfInInventory(item) {
+  if (this.inventory.indexOf(item) !== -1) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+Character.prototype.applyItemStats = function applyItemStats(equippedItem) {
+  this.hp += equippedItem.raiseHealth,
+  this.maxHp += equippedItem.maxHealthModifier,
+  this.mp += equippedItem.raiseImagination,
+  this.maxMp += equippedItem.imnPointsModifier,
+  this.exp += equippedItem.xpModifier,
+
+  this.att += equippedItem.atkModifier,
+  this.def += equippedItem.defModifier,
+  this.imn += equippedItem.imnModifier,
+  this.spd += equippedItem.spdModifier
+};
+
+Character.prototype.removeItemStats = function removeItemStats(removedItem) {
+  this.hp -= removedItem.raiseHealth,
+  this.maxHp -= removedItem.maxHealthModifier,
+  this.mp -= removedItem.raiseImagination,
+  this.maxMp -= removedItem.imnPointsModifier,
+  this.exp -= removedItem.xpModifier,
+
+  this.att -= removedItem.atkModifier,
+  this.def -= removedItem.defModifier,
+  this.imn -= removedItem.imnModifier,
+  this.spd -= removedItem.spdModifier
+};
+
+Character.prototype.equipWeapon = function equipWeapon(item) {
+    this.weapon = item;
+    this.applyItemStats(this.weapon);
+};
+
+Character.prototype.equipEquipment = function equipEquipment(item) {
+    this.equipment = item;
+    this.applyItemStats(this.equipment);
+};
+
+Character.prototype.equipItem = function equipItem(item){
+
+  if (this.checkIfInInventory(item)) {
+
+    if (item.type === "weapons") {
+      this.equipWeapon(item);
+    } else if (item.type === "equipment") {
+      this.equipEquipment(item);
+    } else {
+      console.log("This Item is not equipable.")
+    }
+
+  } else {
+    console.log("Equip Item:  This item is not in your inventory.")
+  }
+
+};
+
+Character.prototype.unequipWeapon = function unequipWeapon(item) {
+    this.removeItemStats(this.weapon);
+    this.weapon = null;
+};
+
+Character.prototype.unequipEquipment = function unequipEquipment(item) {
+    this.removeItemStats(this.equipment);
+    this.equipment = null;
+};
+
+Character.prototype.unequipItem = function unequipItem(item){
+
+  if (this.weapon === item || this.equipment === item) {
+
+    if (item.type === "weapons") {
+      this.unequipWeapon(item);
+    } else if (item.type === "equipment") {
+      this.unequipEquipment(item);
+    } else {
+      console.log("This Item is not equipable.")
+    }
+
+  } else {
+    console.log("Remove Item:  This item is not equipped.")
+  }
+
+};
+
+// var player={name:'sophia',lvl:1,att:20,def:50,imn:2,spd:4,play: true};
+// var enemy={name:'fear',lvl:200,att:2,def:2,imn:2,spd:2};
+// var girl = new Character(player);
+// var fear = new Character(enemy);
