@@ -1,0 +1,25 @@
+Concept Idea: 
+
+//Skeleton Intro Scene:
+
+  //Monster comes up from underneath the bed
+
+When the monster came up from the bottom of the bed to scare Sophia, he found her crying.
+
+"What's wrong?" the Monster asked.
+
+"I dropped my teddy bear and it tumbled under the bed into the dark."
+
+  //Sophia moves from the bed tile
+
+"No, don't!" the Monster screams.
+
+Sophia disappears under the bed.
+
+  //Sophia disappears.
+
+"You will not survive," the Monster says too late.
+
+The Monster runs after her.
+
+  //The Monster disappears.
