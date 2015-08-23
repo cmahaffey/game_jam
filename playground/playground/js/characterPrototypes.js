@@ -33,6 +33,8 @@ Character.prototype.checkIfInInventory = function checkIfInInventory(item) {
   }
 };
 
+// Updated ---
+
 Character.prototype.applyItemStats = function applyItemStats(equippedItem) {
   this.hp += equippedItem.raiseHealth,
   this.maxHp += equippedItem.maxHealthModifier,
@@ -40,10 +42,10 @@ Character.prototype.applyItemStats = function applyItemStats(equippedItem) {
   this.maxMp += equippedItem.imnPointsModifier,
   this.exp += equippedItem.xpModifier,
 
-  this.att += equippedItem.atkModifier,
-  this.def += equippedItem.defModifier,
-  this.imn += equippedItem.imnModifier,
-  this.spd += equippedItem.spdModifier
+  this.att += (equippedItem.atkModifier + this.lvl),
+  this.def += (equippedItem.defModifier + this.lvl),
+  this.imn += (equippedItem.imnModifier + this.lvl),
+  this.spd += (equippedItem.spdModifier + this.lvl)
 };
 
 Character.prototype.removeItemStats = function removeItemStats(removedItem) {
@@ -53,11 +55,16 @@ Character.prototype.removeItemStats = function removeItemStats(removedItem) {
   this.maxMp -= removedItem.imnPointsModifier,
   this.exp -= removedItem.xpModifier,
 
-  this.att -= removedItem.atkModifier,
-  this.def -= removedItem.defModifier,
-  this.imn -= removedItem.imnModifier,
-  this.spd -= removedItem.spdModifier
+  this.att -= (removedItem.atkModifier + this.lvl),
+  this.def -= (removedItem.defModifier + this.lvl),
+  this.imn -= (removedItem.imnModifier + this.lvl),
+  this.spd -= (removedItem.spdModifier + this.lvl)
 };
+
+
+  // --
+
+
 
 Character.prototype.equipWeapon = function equipWeapon(item) {
     this.weapon = item;
