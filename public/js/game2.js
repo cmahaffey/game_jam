@@ -151,7 +151,14 @@ BedJam.Game2.prototype = {
   },
 
   collect: function(player, collectable) {
-    console.log('yummy!');
+    var chest = BedJam.generateRandomToyChest();
+    console.log(chest.item);
+    console.log(chest);
+    if (chest.item) {
+      BedJam.girl.getItem(chest.item);
+      console.log(chest.item);
+    }
+
 
     //remove sprite
     collectable.destroy();

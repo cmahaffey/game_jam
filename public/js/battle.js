@@ -182,13 +182,22 @@ BedJam.Battle.prototype.enemyAttack = function enemyAttack() {
   }
 
   if (this.enemy.win(BedJam.girl)) {
-    this.expMessage = "You lose!";
+    this.expMessage = "Sofia fainted.";
     this.battleResults(this.damageDealt);
     this.fillBars();
     $(window).keydown(function(e) {
       if (e.keyCode === 0 || e.keyCode === 32) {
-        this.battleResults(this.expMessage);
-        // WINDOW KEYDOWN GAME OVER
+        scope.battleResults(scope.expMessage);
+        $(window).keydown(function(e) {
+          if (e.keyCode === 0 || e.keyCode === 32) {
+            $(window).off();
+            BedJam.girl.getStats();
+            scope.endBattle();
+            scope.fillBars();
+            // Starts Game from beginning; need to find a way to make it so items don't reset
+            BedJam.game.state.start('Game');
+          }
+        });
       }
     });
   } else {

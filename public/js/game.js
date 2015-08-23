@@ -50,11 +50,16 @@ BedJam.Game.prototype = {
     this.player.animations.add('right', [5, 6, 7, 8], 7, true);
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
+
+    pauseKey.onDown.add(this.pause, this);
     // this.openingDialogue();
   },
 
   openingDialogue: function() {
     this.game.paused = true;
+
+    var scope = this;
+
     $('.battleText').css({display: 'block'});
     $('.battleText').html('Sofia: I can\'t fall asleep!');
     $(window).keydown(function(e) {
@@ -78,6 +83,8 @@ BedJam.Game.prototype = {
                         $('.battleText').html('');
                         $('.battleText').css({display: 'none'});
                         BedJam.game.paused = false;
+                        // prob wont work
+                        pauseKey.onDown.add(scope.pause, scope);
                       }
                     });
                   }
@@ -190,18 +197,101 @@ BedJam.Game.prototype = {
     }, 2000);
   },
 
-  // pause: function() {
-  //   this.game.paused = true;
-  //   pauseKey.onDown.removeAll();
-  //   pauseKey.onDown.add(this.unpause, this);
-  //   this.pauseMenu = this.game.add.text(10, 0, 'Pause!', {font: '30px Arial', align: 'center', fill: '#fff'});
-  // },
-  //
-  // unpause: function() {
-  //   this.game.paused = false;
-  //   pauseKey.onDown.removeAll();
-  //   pauseKey.onDown.add(this.pause, this);
-  //   this.pauseMenu.destroy();
-  //   console.log('unpause');
-  // }
+  pause: function() {
+    console.log('pause');
+    var scope = this;
+
+    this.pauseMenu = $('<div>').addClass('pauseMenu');
+
+    this.pauseOptions = $('<ul>').addClass('pauseOptions');
+
+    this.statusOption = $('<li>').addClass('pauseMenuOptions').html('Status');
+    this.abilitiesOption = $('<li>').addClass('pauseMenuOptions').html('Abilities');
+    this.equipmentOption = $('<li>').addClass('pauseMenuOptions').html('Equipment');
+    this.itemsOption = $('<li>').addClass('pauseMenuOptions').html('Items');
+    this.exitOption = $('<li>').addClass('pauseMenuOptions').html('Exit');
+
+    this.pauseOptions.append(this.statusOption, this.abilitiesOption, this.equipmentOption, this.itemsOption, this.exitOption);
+    this.pauseMenu.append(this.pauseOptions);
+
+    $('.overlay').append(this.pauseMenu);
+
+    this.statusOption.on('click', function() {
+      scope.viewStats();
+    });
+
+    if (BedJam.girl.lvl >= 2) {
+      this.abilitiesOption.css({opacity: '1', cursor: 'pointer'}).on('click', function() {
+        scope.viewAbilities();
+      });
+    } else {
+      this.abilitiesOption.css({opacity: '0.5', cursor: 'auto'});
+    }
+
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(this.unpause, this);
+  },
+
+  unpause: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(this.pause, this);
+    this.pauseMenu.remove();
+    console.log('unpause');
+  },
+
+  clearMenuClicks: function() {
+    this.statusOption.html('').off();
+    this.abilitiesOption.html('').off();
+    this.equipmentOption.html('').off();
+    this.itemsOption.html('').off();
+    this.exitOption.html('').off();
+  },
+
+  viewStats: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+    this.clearMenuClicks();
+    this.statusOption.html("HP: " + BedJam.girl.hp + " / " + BedJam.girl.maxHp);
+    this.abilitiesOption.html("MP: " + BedJam.girl.mp + " / " + BedJam.girl.maxMp);
+    this.equipmentOption.html("EXP: " + BedJam.girl.exp + " / " + BedJam.girl.expMax);
+    if (BedJam.girl.weapon) {
+      this.itemsOption.html(BedJam.girl.weapon);
+    } else {
+      this.itemsOption.html("Unequipped");
+    }
+    if (BedJam.girl.equipment) {
+      this.exitOption.html(BedJam.girl.equipment);
+    } else {
+      this.exitOption.html("Unequipped");
+    }
+  },
+
+  viewAbilities: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+
+    this.clearMenuClicks();
+
+    if (BedJam.girl.lvl >= 2) {
+      this.statusOption.html("Hurt");
+    }
+    if (BedJam.girl.lvl >= 4) {
+      this.abilitiesOption.html("Heal");
+    }
+    if (BedJam.girl.lvl >= 6) {
+      this.equipmentOption.html("Bedtime");
+    }
+    if (BedJam.girl.lvl >= 8) {
+      this.itemsOption.html("Temper");
+    }
+    if (BedJam.girl.lvl === 10) {
+      this.exitOption.html("Tantrum");
+    }
+  }
 };
