@@ -153,7 +153,6 @@ BedJam.Game2.prototype = {
       this.player.animations.stop();
       this.player.frame = 4;
     }
-
     }
   },
 

@@ -33,6 +33,6 @@ BedJam.Preload.prototype = {
 
   create: function() {
     console.log('preload state loaded');
-    this.state.start('MainMenu');
+    this.state.start('Game');
   }
 };

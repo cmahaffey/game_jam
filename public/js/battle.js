@@ -51,35 +51,37 @@ BedJam.Battle.prototype.createEnemy = function createEnemy() {
   var floorFactor = 0;
   var rng = Math.floor(Math.random() * 100);
 
-  if (BedJam.game.state.getCurrentState().key[4] != 5) {
-    if (BedJam.game.state.getCurrentState().key[4] == 2) {
-      floorFactor = 0;
-    } else if (BedJam.game.state.getCurrentState().key[4] == 3) {
-      floorFactor = 3;
-    } else if (BedJam.game.state.getCurrentState().key[4] == 4) {
-      floorFactor = 6;
-    }
-
-    if (rng < 20) {
-      if (floorFactor > 0) {
-        randomEnemy = -1;
-      } else {
-        randomEnemy = 0;
-      }
-    } else if (rng < 50) {
-      randomEnemy = 0;
-    } else if (rng < 85) {
-      randomEnemy = 1;
-    } else {
-      randomEnemy = 2;
-    }
-    console.log(rng);
-    this.enemy = BedJam.enemies[randomEnemy + floorFactor];
-  } else {
-    this.enemy = BedJam.evilBear;
+  if (BedJam.game.state.getCurrentState().key[4] == 2) {
+    floorFactor = 0;
+  } else if (BedJam.game.state.getCurrentState().key[4] == 3) {
+    floorFactor = 3;
+  } else if (BedJam.game.state.getCurrentState().key[4] == 4) {
+    floorFactor = 6;
+  } else if (BedJam.game.state.getCurrentState().key[4] == 5) {
+    floorFactor = 11;
   }
 
-  this.enemy.getStats();
+  if (rng < 20) {
+    if (floorFactor > 0) {
+      randomEnemy = -1;
+    } else {
+      randomEnemy = 0;
+    }
+  } else if (rng < 50) {
+    randomEnemy = 0;
+  } else if (rng < 85) {
+    randomEnemy = 1;
+  } else {
+    randomEnemy = 2;
+  }
+  console.log(rng);
+
+  if (BedJam.bossFight) {
+    this.enemy = BedJam.enemies[10];
+  } else {
+    this.enemy = BedJam.enemies[randomEnemy + floorFactor];
+    this.enemy.getStats();
+  }
 
   this.enemyPic = $('<img>').attr('src', this.enemy.image).addClass('enemyPic');
    this.enemyLvl= $('<h3>').html("Level: "+this.enemy.lvl).addClass('enemyText');
@@ -349,17 +351,41 @@ BedJam.Battle.prototype.itemsList = function itemsList(scope) {
 
 BedJam.Battle.prototype.runAway = function runAway(scope) {
   // this.clearActions();
-  scope.battleResults('Ran away!');
-  $(window).keydown(function(e) {
-    if (e.keyCode === 0 || e.keyCode === 32) {
-      scope.endBattle();
-    }
-  });
+  console.log(BedJam.bossFight);
+  if (BedJam.bossFight) {
+    scope.battleResults('Can\'t run away!');
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.actionsMenu();
+      }
+    });
+  } else {
+    scope.battleResults('Ran away!');
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.endBattle();
+      }
+    });
+  }
 };
 
 BedJam.Battle.prototype.endBattle = function endBattle() {
-  $('.battleOverlay').remove();
-  $('.battleText').html('');
-  $('.battleText').css({display: 'none'});
-  BedJam.game.paused = false;
+  var scope = this;
+
+  if (BedJam.girl.hp > 0 && BedJam.bossFight) {
+    scope.battleResults('Mr. Cuddles, Esq.: You saved me!');
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.battleResults('Mr.Cuddles, Esq.: Even fear itself couldn\'t stop you!<br>You\'re the scariest monster of them all!');
+        $(window).keydown(function(e) {
+          BedJam.game.state.start('MainMenu');
+        });
+      }
+    });
+  } else {
+    $('.battleOverlay').remove();
+    $('.battleText').html('');
+    $('.battleText').css({display: 'none'});
+    BedJam.game.paused = false;
+  }
 };

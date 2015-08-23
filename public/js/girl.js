@@ -105,7 +105,7 @@ BedJam.evilBear = new BedJam.Character({
   def: 40,
   imn: 0,
   spd: 30,
-  image: '/assets/images/ghost.png'
+  image: '/assets/images/boss.png'
 });
 
 //  All the Enemies

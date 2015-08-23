@@ -185,9 +185,10 @@ BedJam.Game4.prototype = {
     this.game.add.tween(this.player).to( { alpha:0 }, 1000, Phaser.Easing.Linear.None, true);
 
     scope = this.state;
-    setTimeout(function(){
-      console.log('whoo');
-    }, 500);
+    this.game.paused = true;
+    pauseKey.onDown.removeAll();
+    BedJam.bossFight = true;
+    this.battle = new BedJam.Battle();
   },
 
   pause: function() {

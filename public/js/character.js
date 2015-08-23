@@ -269,6 +269,10 @@ BedJam.Character.prototype.applyItemStats = function applyItemStats(equippedItem
   this.spd += equippedItem.spdModifier
 };
 
+BedJam.Character.prototype.useItem = function useItem(item) {
+  this.applyItemStats(item);
+};
+
 BedJam.Character.prototype.removeItemStats = function removeItemStats(removedItem) {
   this.hp -= removedItem.raiseHealth,
   this.maxHp -= removedItem.maxHealthModifier,
