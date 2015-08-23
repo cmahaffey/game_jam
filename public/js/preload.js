@@ -12,9 +12,10 @@ BedJam.Preload.prototype = {
   // load game assets
   this.load.tilemap('level1', '/assets/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
   this.load.tilemap('level2', '/assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
+  this.load.tilemap('level3', '/assets/tilemaps/level3.json', null, Phaser.Tilemap.TILED_JSON);
   this.load.spritesheet('player', '/assets/images/dude.png', 32, 48);
-  this.load.image('level1Tiles', '/assets/images/level1tiles.png');
-  this.load.image('level2Tiles', '/assets/images/basictiles.png');
+  this.load.image('gameTiles', '/assets/images/tiles.png');
+  this.load.image('basictiles', '/assets/images/level2tiles.png');
   this.load.image('thehole', '/assets/images/thehole.png');
   this.load.image('treasure', '/assets/images/treasure.png');
   this.load.image('bug', '/assets/images/bug.png');
@@ -22,6 +23,8 @@ BedJam.Preload.prototype = {
   this.load.image('bug2', '/assets/images/bug2.png');
   this.load.image('bug3', '/assets/images/bug3.png');
   this.load.image('bug4', '/assets/images/bug4.png');
+  this.load.image('level2exit', '/assets/images/level2exit.png');
+  this.load.image('level3', '/assets/images/level3.png');
   },
 
   create: function() {

@@ -7,7 +7,7 @@ function GamestateItems(options) {
   this.equipment = options.equipment || null,
   this.usables = options.usables || null,
 
-  this.types = ["weapons", "equipment", "usables"]
+  this.types = ["weapons", "equipment", "usables"];
 }
 
 GamestateItems.prototype.generateItem = function generateItem(type) {

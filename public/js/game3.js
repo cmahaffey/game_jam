@@ -1,15 +1,14 @@
 var BedJam = BedJam || {};
 
-BedJam.Game = function() {};
+BedJam.Game3 = function() {};
 
-BedJam.Game.prototype = {
+BedJam.Game3.prototype = {
   init: function(playerx, playery) {
     this.playerx = playerx;
     this.playery = playery;
   },
 
   create: function() {
-    $('.statsBox').css({display: 'block'});
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.wasd = {
       up: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -19,14 +18,15 @@ BedJam.Game.prototype = {
     };
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-    this.map = this.game.add.tilemap('level1');
+    this.map = this.game.add.tilemap('level3');
 
     //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
-    this.map.addTilesetImage('tiles', 'gameTiles');
+    this.map.addTilesetImage('level3', 'level3');
 
 
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
+    this.invisible = this.map.createLayer('invisible');
     this.blockedLayer = this.map.createLayer('blockedLayer');
 
     //collision on blockedLayer
@@ -50,44 +50,7 @@ BedJam.Game.prototype = {
     this.player.animations.add('right', [5, 6, 7, 8], 7, true);
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
-    // this.openingDialogue();
-  },
 
-  openingDialogue: function() {
-    this.game.paused = true;
-    $('.battleText').css({display: 'block'});
-    $('.battleText').html('Sofia: I can\'t fall asleep!');
-    $(window).keydown(function(e) {
-      if (e.keyCode === 0 || e.keyCode === 32) {
-        $('.battleText').html('Sofia: Where\'s my teddy bear?');
-        $(window).off();
-        $(window).keydown(function(e) {
-          if (e.keyCode === 0 || e.keyCode === 32) {
-            $('.battleText').html('Mr. Cuddles, Esq.: Help! I\'m under the bed!');
-            $(window).off();
-            $(window).keydown(function(e) {
-              if (e.keyCode === 0 || e.keyCode === 32) {
-                $('.battleText').html('Sofia: Mr. Bear! But... there\'s monsters under there!');
-                $(window).off();
-                $(window).keydown(function(e) {
-                  if (e.keyCode === 0 || e.keyCode === 32) {
-                    $('.battleText').html('Sofia: I have to save him!');
-                    $(window).keydown(function(e) {
-                      if (e.keyCode === 0 || e.keyCode === 32) {
-                        $(window).off();
-                        $('.battleText').html('');
-                        $('.battleText').css({display: 'none'});
-                        BedJam.game.paused = false;
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
   },
 
   createItems: function() {
@@ -137,6 +100,14 @@ BedJam.Game.prototype = {
   },
 
   update: function() {
+    pauseKey.onDown.add(this.pause, this);
+    // test function to enter battle
+    // if (this.game.input.activePointer.justPressed()) {
+    //   this.game.paused = true;
+    //   pauseKey.onDown.removeAll();
+    //   this.battle = new BedJam.Battle();
+    // }
+
     //collision
     this.game.physics.arcade.collide(this.player, this.blockedLayer);
     this.game.physics.arcade.overlap(this.player, this.items, this.collect, null, this);
@@ -144,6 +115,10 @@ BedJam.Game.prototype = {
 
     //player movement
     this.player.body.velocity.x = 0;
+
+    if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W) || this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S) || this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A) || this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+      this.randomBattle();
+    }
 
     if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
       if(this.player.body.velocity.y === 0)
@@ -171,6 +146,16 @@ BedJam.Game.prototype = {
     }
   },
 
+  randomBattle: function() {
+    BedJam.stepCounter++;
+    if (Math.floor(Math.random() * 255) < (BedJam.stepCounter / 256)) {
+      BedJam.stepCounter = 0;
+      this.game.paused = true;
+      pauseKey.onDown.removeAll();
+      this.battle = new BedJam.Battle();
+    };
+  },
+
   collect: function(player, collectable) {
     console.log('yummy!');
 
@@ -182,26 +167,28 @@ BedJam.Game.prototype = {
     this.player.animations.stop();
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
+
     this.game.add.tween(this.player).to( { angle:360 }, 300, Phaser.Easing.Linear.None, true);
     this.game.add.tween(this.player).to( { width:0, height:0 }, 1000, Phaser.Easing.Linear.None, true);
 
+    var scope = this.state;
     setTimeout(function() {
-      BedJam.game.state.start('Game2');
-    }, 2000);
+      this.start('Game4');
+    }, 500);
   },
 
-  // pause: function() {
-  //   this.game.paused = true;
-  //   pauseKey.onDown.removeAll();
-  //   pauseKey.onDown.add(this.unpause, this);
-  //   this.pauseMenu = this.game.add.text(10, 0, 'Pause!', {font: '30px Arial', align: 'center', fill: '#fff'});
-  // },
-  //
-  // unpause: function() {
-  //   this.game.paused = false;
-  //   pauseKey.onDown.removeAll();
-  //   pauseKey.onDown.add(this.pause, this);
-  //   this.pauseMenu.destroy();
-  //   console.log('unpause');
-  // }
+  pause: function() {
+    this.game.paused = true;
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(this.unpause, this);
+    this.pauseMenu = this.game.add.text(10, 0, 'Pause!', {font: '30px Arial', align: 'center', fill: '#fff'});
+  },
+
+  unpause: function() {
+    this.game.paused = false;
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(this.pause, this);
+    this.pauseMenu.destroy();
+    console.log('unpause');
+  }
 };

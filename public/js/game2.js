@@ -9,14 +9,18 @@ BedJam.Game2.prototype = {
   },
 
   create: function() {
-    console.log('game state loaded');
-    $('.battle').remove();
+    BedJam.stepCounter = 0;
     this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.wasd = {
+      up: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.W),
+      down: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.S),
+      left: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.A),
+      right: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.D),
+    };
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    pauseKey.onDown.add(this.pause, this);
 
     this.map = this.game.add.tilemap('level2');
-    this.map.addTilesetImage('basictiles', 'level2Tiles');
+    this.map.addTilesetImage('basictiles', 'basictiles');
 
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
@@ -33,7 +37,7 @@ BedJam.Game2.prototype = {
 
     //create player
     var result = this.findObjectsByType('playerStart', this.map, 'objectsLayer');
-    this.player = this.game.add.sprite(this.playerx + 20, this.playery, 'player');
+    this.player = this.game.add.sprite(result[0].x, result[0].y, 'player');
 
     this.game.physics.enable(this.player);
     this.player.body.collideWorldBounds = true;
@@ -44,6 +48,7 @@ BedJam.Game2.prototype = {
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
   },
+
   createItems: function() {
     //create items
     this.items = this.game.add.group();
@@ -91,9 +96,12 @@ BedJam.Game2.prototype = {
   },
   update: function() {
     // test function to enter battle
-    if (this.game.input.activePointer.justPressed()) {
-      this.game.state.start('Battle');
-    }
+    // pauseKey.onDown.add(this.pause, this);
+    // if (this.game.input.activePointer.justPressed()) {
+    //   this.game.paused = true;
+    //   pauseKey.onDown.removeAll();
+    //   this.battle = new BedJam.Battle();
+    // }
 
     //collision
     this.game.physics.arcade.collide(this.player, this.blockedLayer);
@@ -103,13 +111,17 @@ BedJam.Game2.prototype = {
     //player movement
     this.player.body.velocity.x = 0;
 
+    if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W) || this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S) || this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A) || this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+      this.randomBattle();
+    }
+
     if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
       if(this.player.body.velocity.y === 0)
-      this.player.body.velocity.y -= 50;
+      this.player.body.velocity.y -= 100;
     }
     else if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
       if(this.player.body.velocity.y === 0)
-      this.player.body.velocity.y += 50;
+      this.player.body.velocity.y += 100;
     }
     else {
       this.player.body.velocity.y = 0;
@@ -121,13 +133,23 @@ BedJam.Game2.prototype = {
     else if (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
       this.player.body.velocity.x += 100;
       this.player.animations.play('right');
-    }
-    else {
+    } else {
         // Stand still
         this.player.animations.stop();
         this.player.frame = 4;
     }
   },
+
+  randomBattle: function() {
+    BedJam.stepCounter+= 25;
+    if (Math.floor(Math.random() * 255) < (BedJam.stepCounter / 256)) {
+      BedJam.stepCounter = 0;
+      this.game.paused = true;
+      pauseKey.onDown.removeAll();
+      this.battle = new BedJam.Battle();
+    };
+  },
+
   collect: function(player, collectable) {
     console.log('yummy!');
 
@@ -139,14 +161,13 @@ BedJam.Game2.prototype = {
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
 
-    console.log('entering door that will take you to '+door.targetTilemap+' on x:'+door.targetX+' and y:'+door.targetY);
     // this.game.add.tween(this.player).to( { angle:360 }, 300, Phaser.Easing.Linear.None, true);
     this.game.add.tween(this.player).to( { alpha:0 }, 1000, Phaser.Easing.Linear.None, true);
 
     scope = this.state;
     setTimeout(function(){
       scope.start('Game3');
-    }, 2000);
+    }, 500);
   },
 
   pause: function() {
@@ -154,7 +175,6 @@ BedJam.Game2.prototype = {
     pauseKey.onDown.removeAll();
     pauseKey.onDown.add(this.unpause, this);
     this.pauseMenu = this.game.add.text(10, 0, 'Pause!', {font: '30px Arial', align: 'center', fill: '#fff'});
-    console.log(BedJam.girl);
   },
 
   unpause: function() {

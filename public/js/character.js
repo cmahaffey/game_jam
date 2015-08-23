@@ -25,14 +25,27 @@ BedJam.Character = function Character(options) {
   this.buff = null,
   this.turn = 0,
   this.buffTurns = 0,
-  this.deBTurns = 0
-  this.damageDealt = "";
-  this.statusMessage;
-  this.expMessage = "";
+  this.deBTurns = 0,
+  this.damageDealt = "",
+  this.statusMessage,
+  this.expMessage = "",
+  this.image = options.image,
+  this.stats = options.stats || [
+    [1, 1, 0, 1],
+    [2, 2, 1, 2],
+    [4, 4, 2, 4],
+    [7, 6, 3, 6],
+    [9, 8, 4, 8],
+    [12, 10, 5, 9],
+    [15, 12, 6, 10],
+    [18, 15, 7, 15],
+    [22, 18, 8, 20],
+    [26, 22, 9, 25]
+  ]
 }
 
 BedJam.Character.prototype.battle = function battle(enemy){
-  this.statusMessage;
+  this.statusMessage = '';
 
   this.turn++;
   if (this.buffTurns>1){
@@ -41,7 +54,7 @@ BedJam.Character.prototype.battle = function battle(enemy){
   } else if (this.buffTurns===1) {
     this.buffTurns--;
     this.statusMessage = (this.name+" is no longer buffed!")
-    if (buff==='brave'){
+    if (buff==='temper'){
       this.def=Math.round(this.def/1.5);
       this.buff=null;
     }
@@ -145,6 +158,7 @@ BedJam.Character.prototype.flee= function flee(enemy){
 };
 
 BedJam.Character.prototype.win = function win(enemy){
+  console.log(enemy.hp);
   if (enemy.hp <= 0) {
     this.deBuff=null;
     this.buff=null;
@@ -163,31 +177,74 @@ BedJam.Character.prototype.win = function win(enemy){
 
 BedJam.Character.prototype.calculateExp = function calculateExp(enemy) {
   this.expMessage = "";
-  var gain=Math.floor((enemy.lvl*5)/2)
-  this.exp+=gain;
+  var gain=Math.floor((enemy.lvl*5)/2);
+  this.exp += gain;
+  console.log(this.exp, gain, this.expMax);
   if (this.exp>=this.expMax){
-    this.lvlUp();
+    if (this.lvl < 10) {
+      this.expMessage = this.lvlUp();
+      return this.expMessage;
+    }
+  } else {
+    this.expMessage = (this.name+" gained "+gain+" experience points!");
+    return this.expMessage;
   }
-  console.log(this.name+" gained "+gain+" experience points!");
-  return this.expMessage;
 }
 
-BedJam.Character.prototype.lvlUp=function lvlUp(){
+BedJam.Character.prototype.lvlUp = function lvlUp(){
   if (this.lvl<10){
-    this.expMessage = (this.name+" leveled up!")
-    console.log(this.expMessage);
+    var levelMessage = (this.name+" leveled up!<br>");
     this.lvl+=1;
+    this.getStats();
+    this.exp=0;
+    this.expMax=this.lvl*10;
   }
-  this.exp=0;
-  this.expMax=this.lvl*10;
-  // if (this.lvl===2){this.abilities.push({name: 'hurt', spell:hurt})}
-  // if (this.lvl===4){this.abilities.push({name: 'heal', spell:heal})}
-  // if (this.lvl===6){this.abilities.push({name: 'fortyWinks', spell:fortyWinks})}
-  // if (this.lvl===8){this.abilities.push({name: 'beBrave', spell:beBrave})}
-  // if (this.lvl===10){this.abilities.push({name: 'tantrum', spell:tantrum})}
-  // //this.ptSelect(); menu for lvl up
-  return this.expMessage;
+
+  if (this.lvl===2) {
+    this.abilities.push({name: 'hurt', spell:this.hurt});
+    levelMessage += (this.name+" learned Hurt!");
+  };
+  if (this.lvl===4){
+    this.abilities.push({name: 'heal', spell:this.heal});
+    levelMessage += (this.name+" learned Heal!");
+  };
+  if (this.lvl===6){
+    this.abilities.push({name: 'bedtime', spell:this.bedtime});
+    levelMessage += (this.name+" learned Bedtime!");
+  };
+  if (this.lvl===8){
+    this.abilities.push({name: 'temper', spell:this.temper});
+    levelMessage += (this.name+" learned Temper!");
+  };
+  if (this.lvl===10){
+    this.abilities.push({name: 'tantrum', spell:this.tantrum});
+    levelMessage += (this.name+" learned Tantrum!");
+  };
+  //this.ptSelect(); menu for lvl up
+  return levelMessage;
 };
+
+BedJam.Character.prototype.getStats = function getStats() {
+
+  // [level-1][0]att [1]def [2]imn [3]spd
+
+  this.att = this.stats[this.lvl-1][0];
+  this.def = this.stats[this.lvl-1][1];
+  this.imn = this.stats[this.lvl-1][2];
+  this.spd = this.stats[this.lvl-1][3];
+
+  this.maxHp = ( 5 * this.def);
+  this.maxMp = ( 3 * this.imn);
+
+
+  // fully heals after every level?
+  this.hp = this.maxHp;
+  this.mp = this.maxMp;
+
+  return this;
+};
+
+
 BedJam.Character.prototype.getItem = function getItem(item){
   this.inventory.push(item);
 };

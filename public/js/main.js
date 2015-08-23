@@ -8,6 +8,7 @@ BedJam.game.state.add('Preload', BedJam.Preload);
 BedJam.game.state.add('MainMenu', BedJam.MainMenu);
 BedJam.game.state.add('Game', BedJam.Game);
 BedJam.game.state.add('Game2', BedJam.Game2);
+BedJam.game.state.add('Game3', BedJam.Game3);
 
 // Starts game
 BedJam.game.state.start('Boot');

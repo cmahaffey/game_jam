@@ -11,7 +11,10 @@ canvas {
 }
 
 .battleOverlay {
-  background-color: purple;
+  background: url('/assets/images/earthboundBackground.gif');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -23,7 +26,7 @@ canvas {
 .battleText {
   position: fixed;
   background-color: white;
-  border: 2px solid gold;
+  border: 2px solid black;
   bottom: 6vh;
   left: 10vw;
   right: 10vw;
@@ -31,6 +34,20 @@ canvas {
   text-align: center;
   padding-top: 30px;
   font-size: 30px;
+  z-index: 2;
+  display: none;
+}
+
+.statsBox {
+  position: absolute;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 2px solid black;
+  top: 20px;
+  height: 105px;
+  left: 30px;
+  width: 290px;
+  display: none;
 }
 
 .displayBar {
@@ -38,21 +55,23 @@ canvas {
   left: 85px;
   width: 150px;
   height: 12px;
-  border: 2px solid white;
+  border: 2px solid black;
   background-color: rgba(0, 0, 0, 0);
 }
 
 .displayBarText {
   position: absolute;
+  z-index: 1;
   left: 25px;
   width: 50px;
-  color: white;
+  color: black;
   text-align: right;
   line-height: 1.25;
 }
 
 .displayBarFill {
   position: absolute;
+  z-index: 1;
   left: 87px;
   height: 12px;
 }
@@ -78,13 +97,22 @@ canvas {
 .mpFill {
   top: 52px;
   background-color: purple;
-  width: 146px;
+  width: 150px;
 }
 
 .expFill {
   top: 72px;
   background-color: gold;
-  width: 50px;
+  width: 0px;
+}
+
+.enemyPic {
+  position: absolute;
+  top: 30%;
+  left: 42%;
+  right: auto;
+  max-width: 200px;
+  max-height: 200px;
 }
 
 /* Actions */
@@ -105,10 +133,6 @@ canvas {
 }
 
 /* Powers List */
-
-.powersDiv {
-
-}
 
 .powersUl {
   list-style-type: none;
