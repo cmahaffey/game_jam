@@ -59,6 +59,7 @@ BedJam.Battle.prototype = {
     this.run = $('<td>').addClass('actions').html('<u>R</u>un');
     this.actions.append(this.hit, this.powers, this.actionsRow, this.items, this.run);
     this.battleText.append(this.actions);
+
     this.hitKey = this.game.input.keyboard.addKey(Phaser.Keyboard.H);
     this.hitKey.onDown.add(this.attack, this);
     this.hit.on('click', this.attack);
@@ -147,9 +148,35 @@ BedJam.Battle.prototype = {
 
   //check if you win
   powersList: function() {
-    // this.clearActions();
+    // need to write this in a separate function
+    this.clearActions();
     console.log('pow!');
+
+    this.powersDiv = $('<div>').addClass('powersDiv');
+    this.powersUl = $('<ul>').addClass('powersUl');
+    this.hurt = $('<li>').addClass('selectPower').html('Hurt');
+    this.heal = $('<li>').addClass('selectPower').html('Heal');
+    this.winks = $('<li>').addClass('selectPower').html('40 Winks');
+    this.beBrave = $('<li>').addClass('selectPower').html('Be Brave');
+    this.tantrum = $('<li>').addClass('selectPower').html('Tantrum');
+
+    // you can set them to display: none and as char levels, have them display
+      // maybe a boolean once unlocked
+    this.powersUl.append(this.hurt, this.heal, this.winks, this.beBrave, this.tantrum);
+    this.powersDiv.append(this.powersUl);
+    $('.overlay').append(this.powersDiv);
+
+    this.powersDiv.on('click', this.clearPowers);
+
+    // format for on click:
+    // this.POWERNAME.on('click', this.POWERFUNCTION);
+    // after every click: this.clearPowers;
+
     // populate length based on amount of powers
+  },
+
+  clearPowers: function() {
+    $('.powersDiv').empty();
   },
 
   itemsList: function() {
