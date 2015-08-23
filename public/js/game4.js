@@ -1,15 +1,14 @@
 var BedJam = BedJam || {};
 
-BedJam.Game2 = function() {};
+BedJam.Game4 = function() {};
 
-BedJam.Game2.prototype = {
+BedJam.Game4.prototype = {
   init: function(playerx, playery) {
     this.playerx = playerx;
     this.playery = playery;
   },
 
   create: function() {
-    BedJam.stepCounter = 0;
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.wasd = {
       up: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -17,12 +16,12 @@ BedJam.Game2.prototype = {
       left: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.A),
       right: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.D),
     };
-    this.movementEnabled = true;
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-    this.map = this.game.add.tilemap('level2');
-    this.map.addTilesetImage('level2tiles', 'level2tiles');
-    this.map.addTilesetImage('tiles', 'level1tiles');
+    this.map = this.game.add.tilemap('level4');
+    this.map.addTilesetImage('level3', 'level3');
+    this.map.addTilesetImage('madclown', 'madclown');
+
 
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
@@ -51,6 +50,7 @@ BedJam.Game2.prototype = {
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
 
+    this.movementEnabled = true;
     pauseKey.onDown.add(this.pause, this);
   },
 
@@ -90,7 +90,6 @@ BedJam.Game2.prototype = {
     });
     return result;
   },
-
   //create a sprite from an object
   createFromTiledObject: function(element, group) {
     var sprite = group.create(element.x, element.y, element.properties.sprite);
@@ -100,6 +99,7 @@ BedJam.Game2.prototype = {
         sprite[key] = element.properties[key];
       });
   },
+
   update: function() {
     //collision
     this.game.physics.arcade.collide(this.player, this.blockedLayer);
@@ -175,6 +175,7 @@ BedJam.Game2.prototype = {
     }
     collectable.destroy();
   },
+
   enterDoor: function(player, door) {
     this.player.animations.stop();
     this.player.body.velocity.x = 0;
@@ -185,7 +186,7 @@ BedJam.Game2.prototype = {
 
     scope = this.state;
     setTimeout(function(){
-      scope.start('Game3');
+      console.log('whoo');
     }, 500);
   },
 

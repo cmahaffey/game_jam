@@ -9,7 +9,11 @@ BedJam.Game.prototype = {
   },
 
   create: function() {
+    BedJam.bossFight = false;
     $('.statsBox').css({display: 'block'});
+    $('.hpAmount').html(BedJam.girl.hp + " / " + BedJam.girl.maxHp);
+    $('.mpAmount').html(BedJam.girl.mp + " / " + BedJam.girl.maxMp);
+    $('.expAmount').html(BedJam.girl.exp + " / " + BedJam.girl.expMax);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.wasd = {
       up: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -17,19 +21,14 @@ BedJam.Game.prototype = {
       left: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.A),
       right: BedJam.game.input.keyboard.addKey(Phaser.Keyboard.D),
     };
+    this.movementEnabled = true;
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     this.map = this.game.add.tilemap('level1');
-
-    //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
-    this.map.addTilesetImage('tiles', 'gameTiles');
-
-
-    //create layer
+    this.map.addTilesetImage('tiles', 'level1tiles');
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
     this.blockedLayer = this.map.createLayer('blockedLayer');
 
-    //collision on blockedLayer
     this.map.setCollisionBetween(1, 2000, true, 'blockedLayer');
 
     //resizes the game world to match the layer dimensions
@@ -50,9 +49,7 @@ BedJam.Game.prototype = {
     this.player.animations.add('right', [5, 6, 7, 8], 7, true);
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
-
-    pauseKey.onDown.add(this.pause, this);
-    // this.openingDialogue();
+    this.openingDialogue();
   },
 
   openingDialogue: function() {
@@ -60,40 +57,26 @@ BedJam.Game.prototype = {
 
     var scope = this;
 
-    $('.battleText').css({display: 'block'});
+    $('.battleText').css({display: 'block', cursor: 'pointer'});
     $('.battleText').html('Sofia: I can\'t fall asleep!');
-    $(window).keydown(function(e) {
-      if (e.keyCode === 0 || e.keyCode === 32) {
-        $('.battleText').html('Sofia: Where\'s my teddy bear?');
-        $(window).off();
-        $(window).keydown(function(e) {
-          if (e.keyCode === 0 || e.keyCode === 32) {
-            $('.battleText').html('Mr. Cuddles, Esq.: Help! I\'m under the bed!');
-            $(window).off();
-            $(window).keydown(function(e) {
-              if (e.keyCode === 0 || e.keyCode === 32) {
-                $('.battleText').html('Sofia: Mr. Bear! But... there\'s monsters under there!');
-                $(window).off();
-                $(window).keydown(function(e) {
-                  if (e.keyCode === 0 || e.keyCode === 32) {
-                    $('.battleText').html('Sofia: I have to save him!');
-                    $(window).keydown(function(e) {
-                      if (e.keyCode === 0 || e.keyCode === 32) {
-                        $(window).off();
-                        $('.battleText').html('');
-                        $('.battleText').css({display: 'none'});
-                        BedJam.game.paused = false;
-                        // prob wont work
-                        pauseKey.onDown.add(scope.pause, scope);
-                      }
-                    });
-                  }
-                });
-              }
+    $('.battleText').on('click', function() {
+      $('.battleText').html('Sofia: Where\'s my teddy bear?');
+      $('.battleText').off().on('click', function() {
+        $('.battleText').html('Mr. Cuddles, Esq.: Help!<br> I\'m under the bed! Come get me!');
+        $('.battleText').off().on('click', function() {
+          $('.battleText').html('Sofia: Mr. Bear!<br> But... there\'s monsters under there!');
+          $('.battleText').off().on('click', function() {
+            $('.battleText').html('Sofia: ...I have to save him!');
+            $('.battleText').off().on('click', function() {
+              $('.battleText').html('');
+              $('.battleText').css({display: 'none', cursor: 'auto'});
+              scope.game.paused = false;
+              pauseKey.onDown.add(scope.pause, scope);
+              $('.battleText').off();
             });
-          }
+          });
         });
-      }
+      });
     });
   },
 
@@ -152,30 +135,49 @@ BedJam.Game.prototype = {
     //player movement
     this.player.body.velocity.x = 0;
 
-    if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+    if (this.movementEnabled) {
+      this.player.body.velocity.x = 0;
+
+      if ((this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) && (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A))) {
       if(this.player.body.velocity.y === 0)
       this.player.body.velocity.y -= 100;
-    }
-    else if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+      this.player.animations.play('left');
+      this.player.body.velocity.x -= 100;
+    } else if ((this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) && (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D))) {
+      if(this.player.body.velocity.y === 0)
+      this.player.body.velocity.y -= 100;
+      this.player.animations.play('right');
+      this.player.body.velocity.x += 100;
+    } else if ((this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) && (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A))) {
       if(this.player.body.velocity.y === 0)
       this.player.body.velocity.y += 100;
-    }
-    else {
-      this.player.body.velocity.y = 0;
-    }
-    if (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-      this.player.body.velocity.x -= 100;
       this.player.animations.play('left');
-    }
-    else if (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-      this.player.body.velocity.x += 100;
+      this.player.body.velocity.x -= 100;
+    } else if ((this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) && (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D))) {
+      if(this.player.body.velocity.y === 0)
+      this.player.body.velocity.y += 100;
       this.player.animations.play('right');
+      this.player.body.velocity.x += 100;
+    } else if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        if(this.player.body.velocity.y === 0)
+        this.player.body.velocity.y -= 100;
+        this.player.animations.play('up');
+    } else if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+        if(this.player.body.velocity.y === 0)
+        this.player.body.velocity.y += 100;
+        this.player.animations.play('down');
+    } else if (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+        this.player.body.velocity.x -= 100;
+        this.player.animations.play('left');
+    } else if (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+        this.player.body.velocity.x += 100;
+        this.player.animations.play('right');
+    } else {
+      this.player.body.velocity.y = 0;
+      this.player.animations.stop();
+      this.player.frame = 4;
     }
-    else {
-        // Stand still
-        this.player.animations.stop();
-        this.player.frame = 4;
-    }
+  }
   },
 
   collect: function(player, collectable) {
@@ -189,6 +191,8 @@ BedJam.Game.prototype = {
     this.player.animations.stop();
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
+    this.player.x = door.x;
+    this.player.y = door.y;
     this.game.add.tween(this.player).to( { angle:360 }, 300, Phaser.Easing.Linear.None, true);
     this.game.add.tween(this.player).to( { width:0, height:0 }, 1000, Phaser.Easing.Linear.None, true);
 
@@ -201,7 +205,15 @@ BedJam.Game.prototype = {
     console.log('pause');
     var scope = this;
 
+    this.movementEnabled = false;
+    this.player.animations.stop();
+    // frame for now
+    this.player.frame = 4;
+    this.player.body.velocity.y = 0;
+    this.player.body.velocity.x = 0;
+
     this.pauseMenu = $('<div>').addClass('pauseMenu');
+    this.pauseMenu.css({width: '22%'});
 
     this.pauseOptions = $('<ul>').addClass('pauseOptions');
 
@@ -228,11 +240,25 @@ BedJam.Game.prototype = {
       this.abilitiesOption.css({opacity: '0.5', cursor: 'auto'});
     }
 
+    this.equipmentOption.on('click', function() {
+      scope.viewEquipment();
+    });
+
+    this.itemsOption.on('click', function() {
+      scope.menuPosition = 0;
+      scope.viewItems();
+    });
+
+    this.exitOption.on('click', function() {
+      scope.unpause();
+    });
+
     pauseKey.onDown.removeAll();
     pauseKey.onDown.add(this.unpause, this);
   },
 
   unpause: function() {
+    this.movementEnabled = true;
     pauseKey.onDown.removeAll();
     pauseKey.onDown.add(this.pause, this);
     this.pauseMenu.remove();
@@ -253,20 +279,14 @@ BedJam.Game.prototype = {
       this.pauseMenu.remove();
       this.pause();
     }, this);
+    this.abilitiesOption.css({opacity: '1', cursor: 'pointer'});
+
     this.clearMenuClicks();
-    this.statusOption.html("HP: " + BedJam.girl.hp + " / " + BedJam.girl.maxHp);
-    this.abilitiesOption.html("MP: " + BedJam.girl.mp + " / " + BedJam.girl.maxMp);
-    this.equipmentOption.html("EXP: " + BedJam.girl.exp + " / " + BedJam.girl.expMax);
-    if (BedJam.girl.weapon) {
-      this.itemsOption.html(BedJam.girl.weapon);
-    } else {
-      this.itemsOption.html("Unequipped");
-    }
-    if (BedJam.girl.equipment) {
-      this.exitOption.html(BedJam.girl.equipment);
-    } else {
-      this.exitOption.html("Unequipped");
-    }
+    this.statusOption.html("<b>Sofia</b>");
+    this.abilitiesOption.html("Attack: " + BedJam.girl.att);
+    this.equipmentOption.html("Defense: " + BedJam.girl.def);
+    this.itemsOption.html("Imagination: " + BedJam.girl.imn);
+    this.exitOption.html("Speed: " + BedJam.girl.spd);
   },
 
   viewAbilities: function() {
@@ -277,6 +297,7 @@ BedJam.Game.prototype = {
     }, this);
 
     this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1', cursor: 'pointer'});
 
     if (BedJam.girl.lvl >= 2) {
       this.statusOption.html("Hurt");
@@ -292,6 +313,70 @@ BedJam.Game.prototype = {
     }
     if (BedJam.girl.lvl === 10) {
       this.exitOption.html("Tantrum");
+    }
+  },
+
+  viewEquipment: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+    this.pauseMenu.css({width: '35%'});
+    this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1'});
+    this.statusOption.html("<b>Equipment</b>");
+    this.abilitiesOption.html('Weapon: ' + BedJam.girl.weapon.name);
+    this.equipmentOption.html(BedJam.girl.weapon.description);
+    this.itemsOption.html('Armor: ' + BedJam.girl.equipment.name);
+    this.exitOption.html(BedJam.girl.equipment.description);
+  },
+
+  viewItems: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+
+    this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1'});
+    var scope = this;
+    var items = BedJam.girl.inventory.length;
+
+    if (items >= scope.menuPosition) {
+      this.statusOption.html(BedJam.girl.inventory[scope.menuPosition].name);
+    }
+    if (items >= scope.menuPosition + 1) {
+      this.abilitiesOption.html(BedJam.girl.inventory[scope.menuPosition + 1].name);
+    } else {
+      this.abilitiesOption.html();
+    }
+    if (items >= scope.menuPosition + 2) {
+      this.equipmentOption.html(BedJam.girl.inventory[scope.menuPosition + 2].name);
+    } else {
+      this.equipmentOption.html();
+    }
+    if (items >= scope.menuPosition + 3) {
+      this.itemsOption.html(BedJam.girl.inventory[scope.menuPosition + 3].name);
+    } else {
+      this.itemsOption.html();
+    }
+    if (items >= scope.menuPosition + 4) {
+      this.exitOption.html(BedJam.girl.inventory[scope.menuPosition + 4].name);
+    } else {
+      this.exitOption.html();
+    }
+
+    if (items >= scope.menuPosition + 5) {
+      if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+        scope.menuPosition += 5;
+      }
+    }
+    if (scope.menuPosition - 5 >= 0) {
+      if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        scope.menuPosition -=5;
+      }
     }
   }
 };

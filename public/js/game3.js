@@ -50,7 +50,8 @@ BedJam.Game3.prototype = {
     this.player.animations.add('right', [5, 6, 7, 8], 7, true);
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
-
+    this.movementEnabled = true;
+    pauseKey.onDown.add(this.pause, this);
   },
 
   createItems: function() {
@@ -100,49 +101,59 @@ BedJam.Game3.prototype = {
   },
 
   update: function() {
-    pauseKey.onDown.add(this.pause, this);
-    // test function to enter battle
-    // if (this.game.input.activePointer.justPressed()) {
-    //   this.game.paused = true;
-    //   pauseKey.onDown.removeAll();
-    //   this.battle = new BedJam.Battle();
-    // }
-
     //collision
     this.game.physics.arcade.collide(this.player, this.blockedLayer);
     this.game.physics.arcade.overlap(this.player, this.items, this.collect, null, this);
     this.game.physics.arcade.overlap(this.player, this.doors, this.enterDoor, null, this);
 
     //player movement
-    this.player.body.velocity.x = 0;
+    if (this.movementEnabled) {
+      if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W) || this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S) || this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A) || this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+        this.randomBattle();
+      }
 
-    if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W) || this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S) || this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A) || this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-      this.randomBattle();
-    }
+      this.player.body.velocity.x = 0;
 
-    if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+      if ((this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) && (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A))) {
       if(this.player.body.velocity.y === 0)
       this.player.body.velocity.y -= 100;
-    }
-    else if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+      this.player.animations.play('left');
+      this.player.body.velocity.x -= 100;
+    } else if ((this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) && (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D))) {
+      if(this.player.body.velocity.y === 0)
+      this.player.body.velocity.y -= 100;
+      this.player.animations.play('right');
+      this.player.body.velocity.x += 100;
+    } else if ((this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) && (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A))) {
       if(this.player.body.velocity.y === 0)
       this.player.body.velocity.y += 100;
-    }
-    else {
-      this.player.body.velocity.y = 0;
-    }
-    if (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-      this.player.body.velocity.x -= 100;
       this.player.animations.play('left');
-    }
-    else if (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-      this.player.body.velocity.x += 100;
+      this.player.body.velocity.x -= 100;
+    } else if ((this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) && (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D))) {
+      if(this.player.body.velocity.y === 0)
+      this.player.body.velocity.y += 100;
       this.player.animations.play('right');
+      this.player.body.velocity.x += 100;
+    } else if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        if(this.player.body.velocity.y === 0)
+        this.player.body.velocity.y -= 100;
+        this.player.animations.play('up');
+    } else if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+        if(this.player.body.velocity.y === 0)
+        this.player.body.velocity.y += 100;
+        this.player.animations.play('down');
+    } else if (this.cursors.left.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+        this.player.body.velocity.x -= 100;
+        this.player.animations.play('left');
+    } else if (this.cursors.right.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+        this.player.body.velocity.x += 100;
+        this.player.animations.play('right');
+    } else {
+      this.player.body.velocity.y = 0;
+      this.player.animations.stop();
+      this.player.frame = 4;
     }
-    else {
-        // Stand still
-        this.player.animations.stop();
-        this.player.frame = 4;
+
     }
   },
 
@@ -153,13 +164,15 @@ BedJam.Game3.prototype = {
       this.game.paused = true;
       pauseKey.onDown.removeAll();
       this.battle = new BedJam.Battle();
+      pauseKey.onDown.add(this.pause, this);
     };
   },
 
   collect: function(player, collectable) {
-    console.log('yummy!');
-
-    //remove sprite
+    var chest = BedJam.generateRandomToyChest();
+    if (chest.item) {
+      BedJam.girl.getItem(chest.item);
+    }
     collectable.destroy();
   },
 
@@ -173,22 +186,186 @@ BedJam.Game3.prototype = {
 
     var scope = this.state;
     setTimeout(function() {
-      this.start('Game4');
+      scope.start('Game4');
     }, 500);
   },
 
   pause: function() {
-    this.game.paused = true;
+    console.log('pause');
+    var scope = this;
+
+    this.movementEnabled = false;
+    this.player.animations.stop();
+    // frame for now
+    this.player.frame = 4;
+    this.player.body.velocity.y = 0;
+    this.player.body.velocity.x = 0;
+
+    this.pauseMenu = $('<div>').addClass('pauseMenu');
+    this.pauseMenu.css({width: '22%'});
+
+    this.pauseOptions = $('<ul>').addClass('pauseOptions');
+
+    this.statusOption = $('<li>').addClass('pauseMenuOptions').html('Status');
+    this.abilitiesOption = $('<li>').addClass('pauseMenuOptions').html('Abilities');
+    this.equipmentOption = $('<li>').addClass('pauseMenuOptions').html('Equipment');
+    this.itemsOption = $('<li>').addClass('pauseMenuOptions').html('Items');
+    this.exitOption = $('<li>').addClass('pauseMenuOptions').html('Exit');
+
+    this.pauseOptions.append(this.statusOption, this.abilitiesOption, this.equipmentOption, this.itemsOption, this.exitOption);
+    this.pauseMenu.append(this.pauseOptions);
+
+    $('.overlay').append(this.pauseMenu);
+
+    this.statusOption.on('click', function() {
+      scope.viewStats();
+    });
+
+    if (BedJam.girl.lvl >= 2) {
+      this.abilitiesOption.css({opacity: '1', cursor: 'pointer'}).on('click', function() {
+        scope.viewAbilities();
+      });
+    } else {
+      this.abilitiesOption.css({opacity: '0.5', cursor: 'auto'});
+    }
+
+    this.equipmentOption.on('click', function() {
+      scope.viewEquipment();
+    });
+
+    this.itemsOption.on('click', function() {
+      scope.menuPosition = 0;
+      scope.viewItems();
+    });
+
+    this.exitOption.on('click', function() {
+      scope.unpause();
+    });
+
     pauseKey.onDown.removeAll();
     pauseKey.onDown.add(this.unpause, this);
-    this.pauseMenu = this.game.add.text(10, 0, 'Pause!', {font: '30px Arial', align: 'center', fill: '#fff'});
   },
 
   unpause: function() {
-    this.game.paused = false;
+    this.movementEnabled = true;
     pauseKey.onDown.removeAll();
     pauseKey.onDown.add(this.pause, this);
-    this.pauseMenu.destroy();
+    this.pauseMenu.remove();
     console.log('unpause');
+  },
+
+  clearMenuClicks: function() {
+    this.statusOption.html('').off();
+    this.abilitiesOption.html('').off();
+    this.equipmentOption.html('').off();
+    this.itemsOption.html('').off();
+    this.exitOption.html('').off();
+  },
+
+  viewStats: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+    this.abilitiesOption.css({opacity: '1', cursor: 'pointer'});
+
+    this.clearMenuClicks();
+    this.statusOption.html("<b>Sofia</b>");
+    this.abilitiesOption.html("Attack: " + BedJam.girl.att);
+    this.equipmentOption.html("Defense: " + BedJam.girl.def);
+    this.itemsOption.html("Imagination: " + BedJam.girl.imn);
+    this.exitOption.html("Speed: " + BedJam.girl.spd);
+  },
+
+  viewAbilities: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+
+    this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1', cursor: 'pointer'});
+
+    if (BedJam.girl.lvl >= 2) {
+      this.statusOption.html("Hurt");
+    }
+    if (BedJam.girl.lvl >= 4) {
+      this.abilitiesOption.html("Heal");
+    }
+    if (BedJam.girl.lvl >= 6) {
+      this.equipmentOption.html("Bedtime");
+    }
+    if (BedJam.girl.lvl >= 8) {
+      this.itemsOption.html("Temper");
+    }
+    if (BedJam.girl.lvl === 10) {
+      this.exitOption.html("Tantrum");
+    }
+  },
+
+  viewEquipment: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+    this.pauseMenu.css({width: '35%'});
+    this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1'});
+    this.statusOption.html("<b>Equipment</b>");
+    this.abilitiesOption.html('Weapon: ' + BedJam.girl.weapon.name);
+    this.equipmentOption.html(BedJam.girl.weapon.description);
+    this.itemsOption.html('Armor: ' + BedJam.girl.equipment.name);
+    this.exitOption.html(BedJam.girl.equipment.description);
+  },
+
+  viewItems: function() {
+    pauseKey.onDown.removeAll();
+    pauseKey.onDown.add(function() {
+      this.pauseMenu.remove();
+      this.pause();
+    }, this);
+
+    this.clearMenuClicks();
+    this.abilitiesOption.css({opacity: '1'});
+    var scope = this;
+    var items = BedJam.girl.inventory.length;
+
+    if (items >= scope.menuPosition) {
+      this.statusOption.html(BedJam.girl.inventory[scope.menuPosition].name);
+    }
+    if (items >= scope.menuPosition + 1) {
+      this.abilitiesOption.html(BedJam.girl.inventory[scope.menuPosition + 1].name);
+    } else {
+      this.abilitiesOption.html();
+    }
+    if (items >= scope.menuPosition + 2) {
+      this.equipmentOption.html(BedJam.girl.inventory[scope.menuPosition + 2].name);
+    } else {
+      this.equipmentOption.html();
+    }
+    if (items >= scope.menuPosition + 3) {
+      this.itemsOption.html(BedJam.girl.inventory[scope.menuPosition + 3].name);
+    } else {
+      this.itemsOption.html();
+    }
+    if (items >= scope.menuPosition + 4) {
+      this.exitOption.html(BedJam.girl.inventory[scope.menuPosition + 4].name);
+    } else {
+      this.exitOption.html();
+    }
+
+    if (items >= scope.menuPosition + 5) {
+      if (this.cursors.down.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+        scope.menuPosition += 5;
+      }
+    }
+    if (scope.menuPosition - 5 >= 0) {
+      if (this.cursors.up.isDown || this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+        scope.menuPosition -=5;
+      }
+    }
   }
 };

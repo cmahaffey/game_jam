@@ -26,7 +26,7 @@ canvas {
   position: absolute;
   top: 25%;
   left: 30px;
-  width: 20%;
+  width: 22%;
   height: 31%;
   background-color: rgba(255, 255, 255, 0.8);
   border: 2px solid black;
@@ -67,10 +67,18 @@ canvas {
   background-color: rgba(255, 255, 255, 0.8);
   border: 2px solid black;
   top: 20px;
-  height: 105px;
+  height: 150px;
   left: 30px;
   width: 290px;
   display: none;
+}
+
+.levelDisplay {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 20px;
+  letter-spacing: 1.6px;
 }
 
 .displayBar {
@@ -104,11 +112,11 @@ canvas {
 }
 
 .mpDisplay {
-  top: 50px;
+  top: 70px;
 }
 
 .expDisplay {
-  top: 70px;
+  top: 110px;
 }
 
 .hpFill {
@@ -118,15 +126,33 @@ canvas {
 }
 
 .mpFill {
-  top: 52px;
+  top: 72px;
   background-color: purple;
   width: 150px;
 }
 
 .expFill {
-  top: 72px;
+  top: 112px;
   background-color: gold;
   width: 0px;
+}
+
+.displayAmount {
+  position: absolute;
+  left: 50%;
+  width: 100%;
+}
+
+.hpAmount {
+  top: 52px;
+}
+
+.mpAmount {
+  top: 92px;
+}
+
+.expAmount {
+  top: 132px;
 }
 
 .enemyPic {
@@ -136,6 +162,16 @@ canvas {
   right: auto;
   max-width: 200px;
   max-height: 200px;
+}
+
+.enemyText {
+  position: absolute;
+  top: 25%;
+  left: 42%;
+  right: auto;
+  max-width: 200px;
+  max-height: 200px;
+  color: whitesmoke;
 }
 
 /* Actions */

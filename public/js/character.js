@@ -1,6 +1,3 @@
-//requires abilities.js
-//require itemGenerations.js
-
 var BedJam = BedJam || {};
 
 BedJam.Character = function Character(options) {
@@ -31,16 +28,20 @@ BedJam.Character = function Character(options) {
   this.expMessage = "",
   this.image = options.image,
   this.stats = options.stats || [
-    [1, 1, 0, 1],
-    [2, 2, 1, 2],
-    [4, 4, 2, 4],
-    [7, 6, 3, 6],
-    [9, 8, 4, 8],
-    [12, 10, 5, 9],
-    [15, 12, 6, 10],
-    [18, 15, 7, 15],
-    [22, 18, 8, 20],
-    [26, 22, 9, 25]
+    //[att,def,imn,spd]
+      //fl 1
+        [1,  1,  0,  1],
+        [2,  2,  1,  2],
+        [3,  3,  2,  3],
+      //fl 2
+        [6,  4,  3,  5],
+        [8,  7,  4,  7],
+        [9, 10, 5, 9],
+      //3
+        [15, 11, 6, 10],
+        [18, 15, 7, 15],
+        [22, 18, 8, 20],
+        [26, 22, 9, 25]
   ]
 }
 
@@ -198,6 +199,7 @@ BedJam.Character.prototype.lvlUp = function lvlUp(){
     this.getStats();
     this.exp=0;
     this.expMax=this.lvl*10;
+    $('.levelDisplay').html('Level: ' + this.lvl);
   }
 
   if (this.lvl===2) {
@@ -259,10 +261,7 @@ BedJam.Character.prototype.checkIfInInventory = function checkIfInInventory(item
 
 BedJam.Character.prototype.applyItemStats = function applyItemStats(equippedItem) {
   this.hp += equippedItem.raiseHealth,
-  this.maxHp += equippedItem.maxHealthModifier,
   this.mp += equippedItem.raiseImagination,
-  this.maxMp += equippedItem.imnPointsModifier,
-  this.exp += equippedItem.xpModifier,
 
   this.att += equippedItem.atkModifier,
   this.def += equippedItem.defModifier,

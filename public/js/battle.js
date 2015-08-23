@@ -26,7 +26,9 @@ BedJam.Battle.prototype.fillBars = function() {
   this.hp = BedJam.girl.hp * (150 / BedJam.girl.maxHp);
   this.mp = BedJam.girl.mp * (150 / BedJam.girl.maxMp);
   this.exp = BedJam.girl.exp * (150 / BedJam.girl.expMax);
-
+  $('.hpAmount').html(BedJam.girl.hp + ' / ' + BedJam.girl.maxHp);
+  $('.mpAmount').html(BedJam.girl.mp + ' / ' + BedJam.girl.maxMp);
+  $('.expAmount').html(BedJam.girl.exp + ' / ' + BedJam.girl.expMax);
   $('.hpFill').animate({width: this.hp + 'px'}, 500);
   $('.mpFill').animate({width: this.mp + 'px'}, 500);
 
@@ -44,39 +46,44 @@ BedJam.Battle.prototype.fillBars = function() {
 };
 
 BedJam.Battle.prototype.createEnemy = function createEnemy() {
-  // level 1 (state2)
+
   var randomEnemy = 0;
   var floorFactor = 0;
   var rng = Math.floor(Math.random() * 100);
 
-  if (BedJam.game.state.getCurrentState().key[4] == 2) {
-    floorFactor = 0;
-  } else if (BedJam.game.state.getCurrentState().key[4] == 3) {
-    floorFactor = 3;
-  }
-
-  if (rng < 20) {
-    if (floorFactor > 0) {
-      randomEnemy = -1;
-    } else {
-      randomEnemy = 0;
+  if (BedJam.game.state.getCurrentState().key[4] != 5) {
+    if (BedJam.game.state.getCurrentState().key[4] == 2) {
+      floorFactor = 0;
+    } else if (BedJam.game.state.getCurrentState().key[4] == 3) {
+      floorFactor = 3;
+    } else if (BedJam.game.state.getCurrentState().key[4] == 4) {
+      floorFactor = 6;
     }
-  } else if (rng < 50) {
-    randomEnemy = 0;
-  } else if (rng < 85) {
-    randomEnemy = 1;
-  } else {
-    randomEnemy = 2;
-  }
-  console.log(rng);
-  this.enemy = BedJam.enemies[randomEnemy + floorFactor];
 
+    if (rng < 20) {
+      if (floorFactor > 0) {
+        randomEnemy = -1;
+      } else {
+        randomEnemy = 0;
+      }
+    } else if (rng < 50) {
+      randomEnemy = 0;
+    } else if (rng < 85) {
+      randomEnemy = 1;
+    } else {
+      randomEnemy = 2;
+    }
+    console.log(rng);
+    this.enemy = BedJam.enemies[randomEnemy + floorFactor];
+  } else {
+    this.enemy = BedJam.evilBear;
+  }
 
   this.enemy.getStats();
 
   this.enemyPic = $('<img>').attr('src', this.enemy.image).addClass('enemyPic');
-
-  $('.battleOverlay').append(this.enemyPic);
+   this.enemyLvl= $('<h3>').html("Level: "+this.enemy.lvl).addClass('enemyText');
+  $('.battleOverlay').append(this.enemyLvl, this.enemyPic);
 };
 
 BedJam.Battle.prototype.actionsMenu = function actionsMenu(scope) {

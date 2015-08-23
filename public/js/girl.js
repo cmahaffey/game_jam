@@ -4,6 +4,7 @@ BedJam.girl = new BedJam.Character({
   name: 'Sofia',
   lvl: 1,
   play: true,
+  inventory: [BedJam.pillow, BedJam.blanket, BedJam.juiceBox],
   stats: [
     [3, 3, 1, 2],
     [6, 6, 2, 4],
@@ -18,6 +19,8 @@ BedJam.girl = new BedJam.Character({
   ]
 });
 
+BedJam.girl.equipWeapon(BedJam.girl.inventory[0]);
+BedJam.girl.equipEquipment(BedJam.girl.inventory[1]);
 BedJam.girl.getStats();
 
 // Enemy Template
@@ -57,7 +60,7 @@ BedJam.brokenTruck = new BedJam.Character({
 BedJam.scaryClown = new BedJam.Character({
   name: "Scary Clown",
   lvl: 5,
-  image: '/assets/images/clown.png'
+  image: '/assets/images/madclown.png'
 });
 
 BedJam.lesserMonster = new BedJam.Character({
@@ -93,7 +96,7 @@ BedJam.ghost = new BedJam.Character({
 
 //ONLY CALL MANUALLY
 BedJam.evilBear = new BedJam.Character({
-  name: "Corrupted Teddy Bear",
+  name: "Fear",
   lvl: 11,
   hp: 200,
   maxHp: 200,
@@ -102,7 +105,7 @@ BedJam.evilBear = new BedJam.Character({
   def: 40,
   imn: 0,
   spd: 30,
-  image: '/assets/images/teddyBear.png'
+  image: '/assets/images/ghost.png'
 });
 
 //  All the Enemies
