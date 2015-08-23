@@ -1,9 +1,6 @@
 function hurt(player, enemy){
   enemy.hp-= player.imn*1.5;
-<<<<<<< HEAD
-
-=======
->>>>>>> 9f1f1c73f33b1a05671a303853f83e63d62af009
+  return enemy.name + " lost "+player.imn*1.5+" health"
 }
 
 function heal(player){
@@ -11,12 +8,14 @@ function heal(player){
   if (player.hp>player.maxHp){
     player.hp=player.maxHp;
   }
+  return player.name " gained " +player.imn*1.5+" health"
 }
 
 function fortyWinks(player,enemy){
-  console.log(enemy.name + " has fallen asleep!")
+
   enemy.deBuff='sleep';
   enemy.deBTurns=Math.floor((Math.random()*3)+1);
+  return enemy.name + " has fallen asleep!"
 }
 
 function beBrave(player,enemy){
@@ -24,10 +23,12 @@ function beBrave(player,enemy){
   player.buff='brave';
   player.def=player.def*1.5
   player.buffTurns=1;
+    return player.name " gained " +player.imn*1.5+" health, and has become brave (defense increased by 50%)"
 }
 
 function tantrum(player,enemy){
   enemy.hp-= player.imn*4;
+  eturn enemy.name + " lost "+player.imn*1.5+" health"
 }
 
 // function hurtMore(player,enemy){

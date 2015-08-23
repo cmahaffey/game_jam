@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="32" tileheight="32" nextobjectid="41">
+ <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="184">
+  <image source="../images/tiles.png" width="256" height="765"/>
+ </tileset>
+ <tileset firstgid="185" name="tiles" tilewidth="32" tileheight="32" tilecount="184">
+  <image source="../images/tiles.png" width="256" height="765"/>
+ </tileset>
+ <layer name="backgroundLayer" width="10" height="10" visible="0">
+  <data encoding="csv">
+19,19,19,19,19,19,19,19,19,19,
+19,19,19,19,19,19,19,19,19,19,
+19,19,19,19,19,19,19,19,19,19,
+27,27,27,27,27,27,27,27,27,27,
+33,34,34,34,34,34,34,34,34,35,
+41,42,42,42,42,42,42,42,42,43,
+41,42,42,42,42,42,42,42,42,43,
+41,42,42,42,42,42,42,42,42,43,
+41,42,42,42,42,42,42,42,42,43,
+49,50,50,50,50,50,50,50,50,51
+</data>
+ </layer>
+ <layer name="blockedLayer" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,125,127,128,86,87,88,103,125,0,
+0,133,135,136,62,63,64,0,133,114,
+139,140,141,143,70,71,72,143,137,122,
+41,148,34,151,78,79,80,151,145,130,
+41,0,0,0,0,0,0,0,0,43,
+41,60,61,0,0,0,0,0,0,43,
+41,68,69,0,0,0,0,0,0,43,
+138,76,77,0,0,0,0,0,0,43,
+146,50,50,50,50,50,50,50,50,51
+</data>
+ </layer>
+ <objectgroup name="objectsLayer">
+  <object id="7" x="243.333" y="241.667" width="32" height="32">
+   <properties>
+    <property name="type" value="playerStart"/>
+   </properties>
+  </object>
+  <object id="34" gid="161" x="94" y="261" width="32" height="32">
+   <properties>
+    <property name="sprite" value="thehole"/>
+    <property name="type" value="door"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

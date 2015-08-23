@@ -1,5 +1,6 @@
 body {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background-color: aquamarine;
 =======
 <<<<<<< HEAD
@@ -9,4 +10,133 @@ body {
   margin: 0;
 >>>>>>> raymond
 >>>>>>> a6dfee29511a7d0036303a6cfe3424d8954bfe98
+=======
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+canvas {
+  position: absolute;
+  z-index: 0;
+}
+
+.battleOverlay {
+  background-color: purple;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+}
+
+/* Battle */
+
+.battleText {
+  position: fixed;
+  background-color: white;
+  border: 2px solid gold;
+  bottom: 6vh;
+  left: 10vw;
+  right: 10vw;
+  height: 20vh;
+  text-align: center;
+  padding-top: 30px;
+  font-size: 30px;
+}
+
+.displayBar {
+  position: absolute;
+  left: 85px;
+  width: 150px;
+  height: 12px;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.displayBarText {
+  position: absolute;
+  left: 25px;
+  width: 50px;
+  color: white;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.displayBarFill {
+  position: absolute;
+  left: 87px;
+  height: 12px;
+}
+
+.hpDisplay {
+  top: 30px;
+}
+
+.mpDisplay {
+  top: 50px;
+}
+
+.expDisplay {
+  top: 70px;
+}
+
+.hpFill {
+  top: 32px;
+  background-color: green;
+  width: 150px;
+}
+
+.mpFill {
+  top: 52px;
+  background-color: purple;
+  width: 146px;
+}
+
+.expFill {
+  top: 72px;
+  background-color: gold;
+  width: 50px;
+}
+
+/* Actions */
+
+.actionsMenu {
+  width: 100%;
+  text-align: left;
+  margin-left: 14vw;
+}
+
+.actions {
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.actionsRow {
+  height: 20px;
+}
+
+/* Powers List */
+
+.powersDiv {
+
+}
+
+.powersUl {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  right: 5%;
+  top: 30%;
+  height: 30%;
+  width: 20%;
+  background-color: white;
+  border: 2px solid black;
+}
+
+.selectPower {
+  margin: 15px;
+  font-size: 25px;
+>>>>>>> 9f1f1c73f33b1a05671a303853f83e63d62af009
 }

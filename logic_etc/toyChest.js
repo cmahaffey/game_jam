@@ -10,11 +10,7 @@ function ToyChest(options) {
 }
 
 ToyChest.prototype.trapTriggered = function trapTriggered(player) {
-<<<<<<< HEAD
   console.log("Its a trap!")
-=======
-  console.log("It\'s a trap!")
->>>>>>> 9f1f1c73f33b1a05671a303853f83e63d62af009
   // hurt player by this.damage
 };
 

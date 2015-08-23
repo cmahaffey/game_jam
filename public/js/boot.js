@@ -5,10 +5,12 @@ BedJam.Boot = function() {};
 BedJam.Boot.prototype = {
   preload: function() {
     //this.load.image(  'ANY IMAGES TO BE USED IN LOADING SCREEN' );
+    this.load.image('preloadbar', '/assets/images/preloader-bar.png');
   },
 
   create: function() {
     console.log('boot state loaded');
+    $('.overlay').append($('canvas'));
     // sets loading screen background color
 
     // Scaling options
