@@ -5,6 +5,19 @@ body {
   font-family: 'Josefin Sans', sans-serif;
 }
 
+canvas {
+  position: absolute;
+  z-index: 0;
+}
+
+.battleOverlay {
+  background-color: purple;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+}
+
 /* Battle */
 
 .battleText {

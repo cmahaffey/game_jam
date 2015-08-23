@@ -9,8 +9,7 @@ BedJam.Game.prototype = {
   },
 
   create: function() {
-    console.log('game state loaded');
-    $('.battle').remove();
+    console.log('game state loaded', this);
     this.cursors = this.game.input.keyboard.createCursorKeys();
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     pauseKey.onDown.add(this.pause, this);
@@ -99,7 +98,9 @@ BedJam.Game.prototype = {
 
     // test function to enter battle
     if (this.game.input.activePointer.justPressed()) {
-      this.game.state.start('Battle');
+      this.game.paused = true;
+      pauseKey.onDown.removeAll();
+      this.battle = new BedJam.Battle();
     }
 
     //collision

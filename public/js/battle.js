@@ -1,192 +1,200 @@
 var BedJam = BedJam || {};
 
-BedJam.Battle = function() {};
+BedJam.Battle = function Battle() {
+  console.log('battle state loaded');
+// Battle Overlay
+  var battleOverlay = $('<div>').addClass('battleOverlay');
+  $('.overlay').append(battleOverlay);
+  // Battle text & menu
+  this.battleText = $('<div>').addClass('battle battleText').html('Battle Text');
 
-BedJam.Battle.prototype = {
-  create: function() {
-    console.log('battle state loaded');
+  // HP, MP, Exp
+  this.hpDisplayText = $('<span>').addClass('battle displayBarText hpDisplay').html('HP:');
+  this.mpDisplayText = $('<span>').addClass('battle displayBarText mpDisplay').html('MP:');
+  this.expDisplayText = $('<span>').addClass('battle displayBarText expDisplay').html('EXP:');
 
-    this.stage.backgroundColor = '#6BCAE2';
-  // Battle Overlay
-    // Battle text & menu
-    this.battleText = $('<div>').addClass('battle battleText').html('Battle Text');
+  // Top left bars
+  this.hpDisplay = $('<div>').addClass('battle displayBar hpDisplay');
+  this.mpDisplay = $('<div>').addClass('battle displayBar mpDisplay');
+  this.expDisplay = $('<div>').addClass('battle displayBar expDisplay');
 
-    // HP, MP, Exp
-    this.hpDisplayText = $('<span>').addClass('battle displayBarText hpDisplay').html('HP:');
-    this.mpDisplayText = $('<span>').addClass('battle displayBarText mpDisplay').html('MP:');
-    this.expDisplayText = $('<span>').addClass('battle displayBarText expDisplay').html('EXP:');
+  // Top left bar fills
+  this.hpDisplayFill = $('<div>').addClass('battle displayBarFill hpFill');
+  this.mpDisplayFill = $('<div>').addClass('battle displayBarFill mpFill');
+  this.expDisplayFill = $('<div>').addClass('battle displayBarFill expFill');
 
-    // Top left bars
-    this.hpDisplay = $('<div>').addClass('battle displayBar hpDisplay');
-    this.mpDisplay = $('<div>').addClass('battle displayBar mpDisplay');
-    this.expDisplay = $('<div>').addClass('battle displayBar expDisplay');
+  battleOverlay.append(this.battleText, this.hpDisplayText, this.hpDisplay, this.hpDisplayFill, this.mpDisplayText, this.mpDisplay, this.mpDisplayFill, this.expDisplayText, this.expDisplay, this.expDisplayFill);
 
-    // Top left bar fills
-    this.hpDisplayFill = $('<div>').addClass('battle displayBarFill hpFill');
-    this.mpDisplayFill = $('<div>').addClass('battle displayBarFill mpFill');
-    this.expDisplayFill = $('<div>').addClass('battle displayBarFill expFill');
+  // pass in encountered monster
 
-    $('.overlay').append(this.battleText, this.hpDisplayText, this.hpDisplay, this.hpDisplayFill, this.mpDisplayText, this.mpDisplay, this.mpDisplayFill, this.expDisplayText, this.expDisplay, this.expDisplayFill);
+  this.createEnemy();
 
-    this.selectKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  this.battleResults(this.enemy.name + ' has appeared!');
 
-    // pass in encountered monster
+  var scope = this;
 
-    this.enemy = BedJam.enemyTest;
-
-    this.battleResults('Slime has appeared!');
-    this.selectKey.onDown.add(this.actionsMenu, this);
-  },
-
-  createEnemy: function() {
-    // create enemy
-  },
-
-  update: function() {
-    if (this.game.input.activePointer.justPressed()) {
-      this.game.state.start('Game');
+  $(window).keydown(function(e) {
+    if (e.keyCode === 0 || e.keyCode === 32) {
+      scope.actionsMenu();
     }
-  },
+  });
+};
 
-  actionsMenu: function() {
-    // Create the actions menu
-    this.battleText.html('');
-    this.actions = $('<table>').addClass('actionsMenu');
-    this.hit = $('<td>').addClass('actions').html('<u>H</u>it');
-    this.powers = $('<td>').addClass('actions').html('<u>P</u>owers');
-    this.actionsRow = $('<tr>').addClass('actionsRow');
-    this.items = $('<td>').addClass('actions').html('<u>I</u>tems');
-    this.run = $('<td>').addClass('actions').html('<u>R</u>un');
-    this.actions.append(this.hit, this.powers, this.actionsRow, this.items, this.run);
-    this.battleText.append(this.actions);
+BedJam.Battle.prototype.createEnemy = function createEnemy() {
+  this.enemy = BedJam.enemyTest;
+};
 
-    this.hitKey = this.game.input.keyboard.addKey(Phaser.Keyboard.H);
-    this.hitKey.onDown.add(this.attack, this);
-    this.hit.on('click', this.attack);
+BedJam.Battle.prototype.actionsMenu = function actionsMenu() {
+  // Create the actions menu
+  $(window).off();
+  this.battleText.html('');
+  this.actions = $('<table>').addClass('actionsMenu');
+  this.hit = $('<td>').addClass('actions').html('<u>H</u>it');
+  this.powers = $('<td>').addClass('actions').html('<u>P</u>owers');
+  this.actionsRow = $('<tr>').addClass('actionsRow');
+  this.items = $('<td>').addClass('actions').html('<u>I</u>tems');
+  this.run = $('<td>').addClass('actions').html('<u>R</u>un');
+  this.actions.append(this.hit, this.powers, this.actionsRow, this.items, this.run);
+  this.battleText.append(this.actions);
 
-    this.powersKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-    this.powersKey.onDown.add(this.powersList, this);
-    this.powers.on('click', this.powersList);
+  this.actionsListeners();
+};
 
-    this.itemsKey = this.game.input.keyboard.addKey(Phaser.Keyboard.I);
-    this.itemsKey.onDown.add(this.itemsList, this);
-    this.items.on('click', this.itemsList);
+BedJam.Battle.prototype.actionsListeners = function actionsListeners() {
+  var scope = this;
 
-    this.runKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
-    this.runKey.onDown.add(this.runAway, this);
-    this.run.on('click', this.runAway);
-  },
-
-  battleResults: function(results) {
-    this.battleText.empty();
-    this.battleText.html(results);
-    this.selectKey.onDown.removeAll();
-  },
-
-  clearActions: function() {
-    this.hitKey.onDown.removeAll();
-    this.powersKey.onDown.removeAll();
-    this.itemsKey.onDown.removeAll();
-    this.runKey.onDown.removeAll();
-  },
-
-  attack: function() {
-    this.clearActions();
-    var scope = this;
-
-    this.statusMessage = BedJam.girl.battle(this.enemy);
-
-    if (this.statusMessage) {
-      this.damageDealt = this.statusMessage + "<br>" + BedJam.girl.critCheck(this.enemy);
-    } else {
-      this.damageDealt = BedJam.girl.critCheck(this.enemy);
+  console.log('actions made');
+  $(window).keydown(function(e) {
+    if (e.keyCode === 72) {
+      scope.attack();
+    } else if (e.keyCode === 80) {
+      scope.powersList();
+    } else if (e.keyCode === 73) {
+      scope.itemsList();
+    } else if (e.keyCode === 82) {
+      scope.runAway();
     }
+  });
 
-    if (BedJam.girl.win(this.enemy)) {
-      this.expMessage = BedJam.girl.win(this.enemy) + "<br>" + (BedJam.girl.calculateExp(this.enemy));
-      this.battleResults(this.damageDealt);
-      this.selectKey.onDown.add(function() {
-        this.battleResults(this.expMessage);
-        this.selectKey.onDown.add(function() {
-          // this.enemyAttack();
-        });
-        // exit battle on select key
-      }, this);
-    } else {
-      this.battleResults(this.damageDealt);
-      this.selectKey.onDown.add(function() {
-        console.log(this);
-        scope.enemyAttack();
-      })
-    }
-  },
+  this.hit.on('click', this.attack);
+  this.powers.on('click', this.powersList);
+  this.items.on('click', this.itemsList);
+  this.run.on('click', this.runAway);
+};
 
-  enemyAttack: function() {
-    var scope = this;
+BedJam.Battle.prototype.battleResults = function(results) {
+  $(window).off();
+  this.battleText.empty();
+  this.battleText.html(results);
+};
 
-    this.statusMessage = this.enemy.battle(BedJam.girl);
+BedJam.Battle.prototype.attack = function attack() {
+  $(window).off();
+  var scope = this;
+  this.statusMessage = BedJam.girl.battle(this.enemy);
 
-    if (this.statusMessage) {
-      this.damageDealt = this.statusMessage + "<br>" + this.enemy.critCheck(BedJam.girl);
-    } else {
-      this.damageDealt = this.enemy.critCheck(BedJam.girl);
-    }
-
-    if (this.enemy.win(BedJam.girl)) {
-      this.expMessage = "Enemy wins! You lose!";
-      this.battleResults(this.damageDealt);
-      this.selectKey.onDown.add(function() {
-        this.battleResults(this.expMessage);
-      }, this);
-    } else {
-      this.battleResults(this.damageDealt);
-      this.selectKey.onDown.add(function() {
-        scope.actionsMenu();
-      });
-    }
-  },
-
-  //check if you win
-  powersList: function() {
-    // need to write this in a separate function
-    this.clearActions();
-    console.log('pow!');
-
-    this.powersDiv = $('<div>').addClass('powersDiv');
-    this.powersUl = $('<ul>').addClass('powersUl');
-    this.hurt = $('<li>').addClass('selectPower').html('Hurt');
-    this.heal = $('<li>').addClass('selectPower').html('Heal');
-    this.winks = $('<li>').addClass('selectPower').html('40 Winks');
-    this.beBrave = $('<li>').addClass('selectPower').html('Be Brave');
-    this.tantrum = $('<li>').addClass('selectPower').html('Tantrum');
-
-    // you can set them to display: none and as char levels, have them display
-      // maybe a boolean once unlocked
-    this.powersUl.append(this.hurt, this.heal, this.winks, this.beBrave, this.tantrum);
-    this.powersDiv.append(this.powersUl);
-    $('.overlay').append(this.powersDiv);
-
-    this.powersDiv.on('click', this.clearPowers);
-
-    // format for on click:
-    // this.POWERNAME.on('click', this.POWERFUNCTION);
-    // after every click: this.clearPowers;
-
-    // populate length based on amount of powers
-  },
-
-  clearPowers: function() {
-    $('.powersDiv').empty();
-  },
-
-  itemsList: function() {
-    // this.clearActions();
-    console.log('items!');
-  },
-
-  runAway: function() {
-    // this.clearActions();
-    console.log('run!');
-    this.battleResults('Ran away!');
+  if (this.statusMessage) {
+    this.damageDealt = this.statusMessage + "<br>" + BedJam.girl.critCheck(this.enemy);
+  } else {
+    this.damageDealt = BedJam.girl.critCheck(this.enemy);
   }
-}
+
+  if (BedJam.girl.win(this.enemy)) {
+    this.expMessage = BedJam.girl.win(this.enemy) + "<br>" + (BedJam.girl.calculateExp(this.enemy));
+    this.battleResults(this.damageDealt);
+
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.battleResults(scope.expMessage);
+        $(window).keydown(function(e) {
+          if (e.keyCode === 0 || e.keyCode === 32) {
+            $('.battleOverlay').remove();
+            BedJam.game.paused = false;
+          }
+        });
+      }
+    });
+  } else {
+    this.battleResults(this.damageDealt);
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.enemyAttack();
+      }
+    });
+  }
+};
+
+BedJam.Battle.prototype.enemyAttack = function enemyAttack() {
+  var scope = this;
+
+  this.statusMessage = this.enemy.battle(BedJam.girl);
+
+  if (this.statusMessage) {
+    this.damageDealt = this.statusMessage + "<br>" + this.enemy.critCheck(BedJam.girl);
+  } else {
+    this.damageDealt = this.enemy.critCheck(BedJam.girl);
+  }
+
+  if (this.enemy.win(BedJam.girl)) {
+    this.expMessage = "Enemy wins! You lose!";
+    this.battleResults(this.damageDealt);
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        this.battleResults(this.expMessage);
+        // WINDOW KEYDOWN GAME OVER
+      }
+    });
+  } else {
+    this.battleResults(this.damageDealt);
+    $(window).keydown(function(e) {
+      if (e.keyCode === 0 || e.keyCode === 32) {
+        scope.actionsMenu();
+      }
+    });
+  }
+};
+
+BedJam.Battle.prototype.powersList = function powersList() {
+  // need to write this in a separate function
+  var scope = this;
+
+  scope.clearActions();
+  console.log('pow!');
+
+  this.powersDiv = $('<div>').addClass('powersDiv');
+  this.powersUl = $('<ul>').addClass('powersUl');
+  this.hurt = $('<li>').addClass('selectPower').html('Hurt');
+  this.heal = $('<li>').addClass('selectPower').html('Heal');
+  this.winks = $('<li>').addClass('selectPower').html('40 Winks');
+  this.beBrave = $('<li>').addClass('selectPower').html('Be Brave');
+  this.tantrum = $('<li>').addClass('selectPower').html('Tantrum');
+
+  // you can set them to display: none and as char levels, have them display
+    // maybe a boolean once unlocked
+  this.powersUl.append(this.hurt, this.heal, this.winks, this.beBrave, this.tantrum);
+  this.powersDiv.append(this.powersUl);
+  $('.overlay').append(this.powersDiv);
+
+  this.powersDiv.on('click', this.clearPowers);
+
+  // format for on click:
+  // this.POWERNAME.on('click', this.POWERFUNCTION);
+  // after every click: this.clearPowers;
+
+  // populate length based on amount of powers
+};
+
+BedJam.Battle.prototype.clearPowers = function clearPowers() {
+  $('.powersDiv').empty();
+};
+
+BedJam.Battle.prototype.itemsList = function itemsList() {
+  // this.clearActions();
+  console.log('items!');
+};
+
+BedJam.Battle.prototype.runAway = function runAway() {
+  // this.clearActions();
+  console.log('run!');
+  this.battleResults('Ran away!');
+};
