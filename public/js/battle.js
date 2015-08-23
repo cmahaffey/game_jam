@@ -6,8 +6,8 @@ BedJam.Battle.prototype = {
   create: function() {
     console.log('battle state loaded');
 
+    this.stage.backgroundColor = '#6BCAE2';
   // Battle Overlay
-
     // Battle text & menu
     this.battleText = $('<div>').addClass('battle battleText').html('Battle Text');
 
@@ -28,8 +28,18 @@ BedJam.Battle.prototype = {
 
     $('.overlay').append(this.battleText, this.hpDisplayText, this.hpDisplay, this.hpDisplayFill, this.mpDisplayText, this.mpDisplay, this.mpDisplayFill, this.expDisplayText, this.expDisplay, this.expDisplayFill);
 
+    this.selectKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
     // pass in encountered monster
+
+    this.enemy = BedJam.enemyTest;
+
     this.battleResults('Slime has appeared!');
+    this.selectKey.onDown.add(this.actionsMenu, this);
+  },
+
+  createEnemy: function() {
+    // create enemy
   },
 
   update: function() {
@@ -49,48 +59,106 @@ BedJam.Battle.prototype = {
     this.run = $('<td>').addClass('actions').html('<u>R</u>un');
     this.actions.append(this.hit, this.powers, this.actionsRow, this.items, this.run);
     this.battleText.append(this.actions);
-    hitKey = this.game.input.keyboard.addKey(Phaser.Keyboard.H);
-    hitKey.onDown.add(this.attack, this);
+    this.hitKey = this.game.input.keyboard.addKey(Phaser.Keyboard.H);
+    this.hitKey.onDown.add(this.attack, this);
     this.hit.on('click', this.attack);
 
-    powersKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
-    powersKey.onDown.add(this.powersList, this);
+    this.powersKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
+    this.powersKey.onDown.add(this.powersList, this);
     this.powers.on('click', this.powersList);
 
-    itemsKey = this.game.input.keyboard.addKey(Phaser.Keyboard.I);
-    itemsKey.onDown.add(this.itemsList, this);
+    this.itemsKey = this.game.input.keyboard.addKey(Phaser.Keyboard.I);
+    this.itemsKey.onDown.add(this.itemsList, this);
     this.items.on('click', this.itemsList);
 
-    runKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
-    runKey.onDown.add(this.runAway, this);
+    this.runKey = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+    this.runKey.onDown.add(this.runAway, this);
     this.run.on('click', this.runAway);
   },
 
   battleResults: function(results) {
     this.battleText.empty();
     this.battleText.html(results);
-    selectKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    selectKey.onDown.add(this.actionsMenu, this);
+    this.selectKey.onDown.removeAll();
+  },
+
+  clearActions: function() {
+    this.hitKey.onDown.removeAll();
+    this.powersKey.onDown.removeAll();
+    this.itemsKey.onDown.removeAll();
+    this.runKey.onDown.removeAll();
   },
 
   attack: function() {
-    console.log('hit!');
-    this.battleResults('Hit!');
+    this.clearActions();
+    var scope = this;
+
+    this.statusMessage = BedJam.girl.battle(this.enemy);
+
+    if (this.statusMessage) {
+      this.damageDealt = this.statusMessage + "<br>" + BedJam.girl.critCheck(this.enemy);
+    } else {
+      this.damageDealt = BedJam.girl.critCheck(this.enemy);
+    }
+
+    if (BedJam.girl.win(this.enemy)) {
+      this.expMessage = BedJam.girl.win(this.enemy) + "<br>" + (BedJam.girl.calculateExp(this.enemy));
+      this.battleResults(this.damageDealt);
+      this.selectKey.onDown.add(function() {
+        this.battleResults(this.expMessage);
+        this.selectKey.onDown.add(function() {
+          // this.enemyAttack();
+        });
+        // exit battle on select key
+      }, this);
+    } else {
+      this.battleResults(this.damageDealt);
+      this.selectKey.onDown.add(function() {
+        console.log(this);
+        scope.enemyAttack();
+      })
+    }
   },
 
+  enemyAttack: function() {
+    var scope = this;
+
+    this.statusMessage = this.enemy.battle(BedJam.girl);
+
+    if (this.statusMessage) {
+      this.damageDealt = this.statusMessage + "<br>" + this.enemy.critCheck(BedJam.girl);
+    } else {
+      this.damageDealt = this.enemy.critCheck(BedJam.girl);
+    }
+
+    if (this.enemy.win(BedJam.girl)) {
+      this.expMessage = "Enemy wins! You lose!";
+      this.battleResults(this.damageDealt);
+      this.selectKey.onDown.add(function() {
+        this.battleResults(this.expMessage);
+      }, this);
+    } else {
+      this.battleResults(this.damageDealt);
+      this.selectKey.onDown.add(function() {
+        scope.actionsMenu();
+      });
+    }
+  },
+
+  //check if you win
   powersList: function() {
+    // this.clearActions();
     console.log('pow!');
-
-
-
     // populate length based on amount of powers
   },
 
   itemsList: function() {
+    // this.clearActions();
     console.log('items!');
   },
 
   runAway: function() {
+    // this.clearActions();
     console.log('run!');
     this.battleResults('Ran away!');
   }

@@ -1,8 +1,8 @@
 var BedJam = BedJam || {};
 
-BedJam.Game = function() {};
+BedJam.Game2 = function() {};
 
-BedJam.Game.prototype = {
+BedJam.Game2.prototype = {
   init: function(playerx, playery) {
     this.playerx = playerx;
     this.playery = playery;
@@ -15,11 +15,8 @@ BedJam.Game.prototype = {
     pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     pauseKey.onDown.add(this.pause, this);
 
-    this.map = this.game.add.tilemap('level1');
-
-    //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
-    this.map.addTilesetImage('tiles', 'level1Tiles');
-
+    this.map = this.game.add.tilemap('level2');
+    this.map.addTilesetImage('basictiles', 'level2Tiles');
 
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
@@ -46,9 +43,7 @@ BedJam.Game.prototype = {
     this.player.animations.add('right', [5, 6, 7, 8], 7, true);
     this.player.animations.add('up', [0, 1, 2, 3], 7, true);
     this.player.animations.add('down', [5, 6, 7, 8], 7, true);
-
   },
-
   createItems: function() {
     //create items
     this.items = this.game.add.group();
@@ -94,9 +89,7 @@ BedJam.Game.prototype = {
         sprite[key] = element.properties[key];
       });
   },
-
   update: function() {
-
     // test function to enter battle
     if (this.game.input.activePointer.justPressed()) {
       this.game.state.start('Battle');
@@ -135,25 +128,24 @@ BedJam.Game.prototype = {
         this.player.frame = 4;
     }
   },
-
   collect: function(player, collectable) {
     console.log('yummy!');
 
     //remove sprite
     collectable.destroy();
   },
-
   enterDoor: function(player, door) {
     this.player.animations.stop();
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
 
     console.log('entering door that will take you to '+door.targetTilemap+' on x:'+door.targetX+' and y:'+door.targetY);
-    this.game.add.tween(this.player).to( { angle:360 }, 300, Phaser.Easing.Linear.None, true);
-    this.game.add.tween(this.player).to( { width:0, height:0 }, 1000, Phaser.Easing.Linear.None, true);
+    // this.game.add.tween(this.player).to( { angle:360 }, 300, Phaser.Easing.Linear.None, true);
+    this.game.add.tween(this.player).to( { alpha:0 }, 1000, Phaser.Easing.Linear.None, true);
 
-    setTimeout(function() {
-      BedJam.game.state.start('Game2');
+    scope = this.state;
+    setTimeout(function(){
+      scope.start('Game3');
     }, 2000);
   },
 

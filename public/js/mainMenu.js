@@ -9,7 +9,7 @@ BedJam.MainMenu.prototype = {
 
   update: function() {
     if (this.game.input.activePointer.justPressed()) {
-      this.game.state.start('Game');
+      this.game.state.start('Game', true, false, 200, 200);
     }
   }
 };
